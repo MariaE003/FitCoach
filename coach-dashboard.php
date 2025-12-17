@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Coach - SportCoach</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <!-- Navigation -->
+ <?php
+require('./header.php')
+?>
+
+  <!-- Dashboard Content -->
+  <section class="flex-1 py-10">
+    <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-6">
+
+      <!-- Sidebar -->
+      <aside class="md:col-span-1 bg-white rounded-xl shadow-lg p-6 flex flex-col space-y-4">
+        <div class="text-center">
+          <img src="https://via.placeholder.com/100" alt="Photo Coach" class="w-24 h-24 rounded-full mx-auto mb-2">
+          <h2 class="font-bold text-lg text-gray-800">Mohammed Benali</h2>
+          <p class="text-gray-500 text-sm">Coach Fitness & Cardio</p>
+        </div>
+        <nav class="mt-4 flex flex-col space-y-2">
+          <a href="./Mes-reservations.php" class="text-green-600 font-semibold hover:underline">Gestion des Réservations</a>
+          <a href="./profil-du-coach.php" class="text-green-600 font-semibold hover:underline">Mon Profil</a>
+          <a href="./coach-availability.php" class="text-green-600 font-semibold hover:underline">Disponibilités</a>
+          <!-- <a href="#statistiques" class="text-green-600 font-semibold hover:underline">Statistiques</a> -->
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="md:col-span-3 flex flex-col space-y-6">
+
+        <!-- Statistiques -->
+        <section id="statistiques" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white p-6 rounded-xl shadow flex flex-col items-center">
+            <span class="text-gray-500">Demandes en attente</span>
+            <span class="text-3xl font-bold text-green-600 mt-2">5</span>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow flex flex-col items-center">
+            <span class="text-gray-500">Séances validées aujourd'hui</span>
+            <span class="text-3xl font-bold text-green-600 mt-2">8</span>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow flex flex-col items-center">
+            <span class="text-gray-500">Séances validées demain</span>
+            <span class="text-3xl font-bold text-green-600 mt-2">3</span>
+          </div>
+        </section>
+
+        <!-- Prochain sportif -->
+        <section class="bg-white p-6 rounded-xl shadow flex flex-col md:flex-row justify-between items-center">
+          <div>
+            <h3 class="font-bold text-gray-800">Prochaine séance</h3>
+            <p class="text-gray-600 mt-1">Mohammed Benali - 16 Décembre 2024 à 10:00</p>
+            <p class="text-gray-600">Type : Individuelle</p>
+          </div>
+          <button class="mt-4 md:mt-0 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">Voir Détails</button>
+        </section>
+
+        <!-- Gestion des réservations -->
+        <!-- <section id="reservations" class="bg-white p-6 rounded-xl shadow">
+          <h3 class="text-lg font-bold text-gray-800 mb-4">Demandes de séances</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead class="bg-green-600 text-white">
+                <tr>
+                  <th class="py-2 px-4">Client</th>
+                  <th class="py-2 px-4">Date / Heure</th>
+                  <th class="py-2 px-4">Type</th>
+                  <th class="py-2 px-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="text-gray-700">
+                <tr class="border-b">
+                  <td class="py-2 px-4">Ali Ziani</td>
+                  <td class="py-2 px-4">16/12/2024 10:00</td>
+                  <td class="py-2 px-4">Individuelle</td>
+                  <td class="py-2 px-4 space-x-2">
+                    <button class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition">Accepter</button>
+                    <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition">Refuser</button>
+                  </td>
+                </tr>
+                <tr class="border-b">
+                  <td class="py-2 px-4">Sara Benali</td>
+                  <td class="py-2 px-4">16/12/2024 11:00</td>
+                  <td class="py-2 px-4">Groupe</td>
+                  <td class="py-2 px-4 space-x-2">
+                    <button class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition">Accepter</button>
+                    <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition">Refuser</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section> -->
+
+        <!-- Gestion du profil -->
+        <!-- <section id="profil" class="bg-white p-6 rounded-xl shadow grid md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Modifier Profil</h3>
+            <label class="block text-gray-700 mb-1">Photo</label>
+            <input type="file" class="mb-4">
+            <label class="block text-gray-700 mb-1">Biographie</label>
+            <textarea class="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4" rows="3">Coach expérimenté en fitness et cardio.</textarea>
+            <label class="block text-gray-700 mb-1">Disciplines sportives</label>
+            <input type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4" placeholder="Fitness, Cardio, Musculation">
+            <label class="block text-gray-700 mb-1">Certifications</label>
+            <input type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4" placeholder="Ex: CrossFit Level 1">
+            <button class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">Enregistrer</button>
+          </div> -->
+
+          <!-- Gestion des disponibilités -->
+          <!-- <div>
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Disponibilités</h3>
+            <div class="space-y-2">
+              <div class="flex justify-between items-center bg-gray-100 px-4 py-2 rounded-lg">
+                <span>16/12/2024 - 10:00</span>
+                <button class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition">Modifier</button>
+              </div>
+              <div class="flex justify-between items-center bg-gray-100 px-4 py-2 rounded-lg">
+                <span>16/12/2024 - 11:00</span>
+                <button class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition">Modifier</button>
+              </div>
+            </div>
+          </div> -->
+        </section>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <?php
+require('./footer.php')
+?>
+
+</body>
+</html>

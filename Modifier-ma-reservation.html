@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier Réservation - SportCoach</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-dumbbell"></i>
+                    <span>SportCoach</span>
+                </a>
+                <div class="nav-buttons">
+                    <a href="client-dashboard.html" class="btn btn-outline">Mon compte</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+  <!-- Modification Réservation -->
+<section class="reservation-edit-section py-10 bg-gray-50 min-h-screen">
+  <div class="container mx-auto px-4">
+    <a href="client-reservations.html" class="inline-block mb-6 text-blue-600 font-semibold hover:underline">
+      ← Retour à mes réservations
+    </a>
+
+    <div class="bg-white rounded-xl shadow-lg p-6 md:p-10 max-w-3xl mx-auto">
+      <h1 class="text-2xl font-bold text-gray-800 mb-6">Modifier la réservation</h1>
+
+      <form id="editReservationForm" class="space-y-6">
+        <!-- Date & Heure -->
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label for="editDate" class="block mb-2 font-semibold text-gray-700">Date</label>
+            <input type="date" id="editDate" name="editDate" value="2024-12-16" required
+              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          </div>
+          <div>
+            <label for="editTime" class="block mb-2 font-semibold text-gray-700">Heure</label>
+            <input type="time" id="editTime" name="editTime" value="10:00" required
+              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          </div>
+        </div>
+
+        <!-- Coach (non modifiable) -->
+        <div>
+          <label class="block mb-2 font-semibold text-gray-700">Coach</label>
+          <input type="text" value="Mohammed Benali" disabled
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 text-gray-700 cursor-not-allowed">
+        </div>
+
+        <!-- Type de séance -->
+        <div>
+          <label for="editType" class="block mb-2 font-semibold text-gray-700">Type de séance</label>
+          <select id="editType" name="editType" required
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <option value="individual" selected>Individuelle</option>
+            <option value="group">En groupe (2-4 personnes)</option>
+          </select>
+        </div>
+
+        <!-- Niveau du client -->
+        <div>
+          <label for="editLevel" class="block mb-2 font-semibold text-gray-700">Votre niveau</label>
+          <select id="editLevel" name="editLevel" required
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <option value="beginner">Débutant</option>
+            <option value="intermediate" selected>Intermédiaire</option>
+            <option value="advanced">Avancé</option>
+          </select>
+        </div>
+
+        <!-- Notes supplémentaires -->
+        <div>
+          <label for="editNotes" class="block mb-2 font-semibold text-gray-700">Notes supplémentaires</label>
+          <textarea id="editNotes" name="editNotes" rows="4"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Informations médicales, préférences ou commentaires...">Séance axée sur le renforcement physique et la technique.</textarea>
+        </div>
+
+        <!-- Boutons -->
+        <div class="flex justify-end space-x-4">
+          <a href="client-reservations.html"
+             class="px-6 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-500 hover:text-white transition font-semibold">
+            Annuler
+          </a>
+          <button type="submit"
+                  class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-semibold">
+            Enregistrer les modifications
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
