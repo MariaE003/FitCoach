@@ -1,6 +1,9 @@
 <?php
 session_start();
 require "../connect.php";
+
+
+$erreur="";
 if (isset($_POST["Seconnecter"])) {
   #vilider les champs
   if (!empty($_POST["email"]) && !empty($_POST["password"])) {
@@ -26,21 +29,11 @@ if (isset($_POST["Seconnecter"])) {
         exit();
         
       }else{
-        ?>
-        <script>
-          alert("Mot de pass incorrect");
-        </script>
-        <?php
+        $erreur="mot de passe incorrect !";
       }
     }else{
-      ?>
-        <script>
-          alert("Mot de pass incorrect");
-        </script>
-        <?php
-    }
-
-    
+        $erreur="email incorrect !";
+    }    
 
   }
 }
@@ -84,17 +77,24 @@ if (isset($_POST["Seconnecter"])) {
           <h1 class="text-2xl font-bold text-gray-800 mb-2">Connexion</h1>
           <p class="text-gray-600 mb-6">Accédez à votre compte</p>
 
-          <form method="POST" id="loginForm" class="space-y-4">
+          <form method="POST" id="loginForm" class="space-y-4" onsubmit="return validerForm()">
+            <?php if(!empty($erreur)){
+              ?>
+              <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+                <?= $erreur ?>
+              </div>
+            <?php
+            };?>
             <div>
               <label for="email" class="block mb-1 font-semibold text-gray-700">Email</label>
-              <input type="email" id="email" name="email" placeholder="votre@email.com" required
+              <input type="email" id="email" name="email" placeholder="votre@email.com" 
                 class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-600">
             </div>
 
             <div>
               <label for="password" class="block mb-1 font-semibold text-gray-700">Mot de passe</label>
               <div class="relative">
-                <input type="password" id="password" name="password" placeholder="••••••••" required
+                <input type="password" id="password" name="password" placeholder="••••••••" 
                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-600">
                 <button type="button" id="togglePassword" class="absolute right-2 top-2 text-gray-500">
                   <i class="fas fa-eye"></i>
@@ -147,6 +147,29 @@ require('../components/footer.php')
     //   e.preventDefault();
     //   alert('Connexion réussie !');
     // });
+
+    // validation
+    let email = document.getElementById('email');
+    let password = document.getElementById('password');
+
+    function validerForm() {
+      let regexEmail=/^[A-Za-z0-9-_.]+@gmail\.com$/;
+      let regexPassword=/^[A-Za-z0-9@._!-\s]{6,}$/;
+
+      if (!regexEmail.test(email.value)) {
+        alert("email invalide !");
+        email.focus();
+        return false; 
+      }
+
+      if (!regexPassword.test(password.value)) {
+        alert("mot de passe invalide !");
+        password.focus();
+        return false; 
+      }
+      return true; 
+  }
+
 
   </script>
 

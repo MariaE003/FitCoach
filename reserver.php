@@ -428,7 +428,7 @@
 
 <!-- NAV -->
 <?php
-require('./header.php')
+require('./components/header.php')
 ?>
 
 <!-- CONTENT -->
@@ -523,7 +523,7 @@ require('./header.php')
 </section>
 
 <?php
-require('./footer.php')
+require('./components/footer.php')
 ?>
 
 <script>

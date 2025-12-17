@@ -11,7 +11,7 @@
 
 <!-- Navigation -->
 <?php
-require('./header.php')
+require('./components/header.php')
 ?>
 
 <!-- Calendrier Disponibilités -->
@@ -73,7 +73,7 @@ require('./header.php')
 
 <!-- Footer -->
 <?php
-require('./footer.php')
+require('./components/footer.php')
 ?>
 
 <script>

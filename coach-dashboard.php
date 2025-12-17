@@ -11,7 +11,7 @@
 
   <!-- Navigation -->
  <?php
-require('./header.php')
+require('./components/header.php')
 ?>
 
   <!-- Dashboard Content -->
@@ -136,7 +136,7 @@ require('./header.php')
 
   <!-- Footer -->
   <?php
-require('./footer.php')
+require('./components/footer.php')
 ?>
 
 </body>

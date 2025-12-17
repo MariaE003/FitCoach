@@ -27,7 +27,7 @@
 
 <!-- NAVBAR -->
 <?php
-require('./header.php');
+require('./components/header.php');
 ?>
 
 <!-- PAGE HEADER -->
@@ -147,7 +147,7 @@ require('./header.php');
 
 <!-- FOOTER -->
 <?php
-require('./footer.php')
+require('./components/footer.php')
 ?>
 
 
