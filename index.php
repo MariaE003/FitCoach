@@ -1,5 +1,9 @@
 <?php
 require 'connect.php';
+require './session.php';
+
+// echo $_SESSION["role"];
+
 
 ?>
 <!DOCTYPE html>

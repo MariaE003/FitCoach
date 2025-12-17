@@ -1,8 +1,8 @@
  <?php
-//  session_start();
+ session_start();
 
-if(!isset($_SESSION['id_user'])) {
-    header("Location: auth/login.php");
+if(!isset($_SESSION['user_id'])) {
+    header("Location: /auth/login.php");
     exit();
 }
 
@@ -16,4 +16,14 @@ if(isset($_POST["logout"])){
     header("Location: auth/login.php");
     exit();
 }
+
+
+
+if (isset($RolePage) && $_SESSION["role"]!==$RolePage){
+    // echo $_SESSION["role"];
+    header("Location: index.php");
+    exit();
+    
+}
+
  ?>

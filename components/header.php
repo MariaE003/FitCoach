@@ -10,12 +10,23 @@
       <a href="#" class="hover:text-accent">Contact</a>
     </nav>
     <div class="hidden md:flex gap-3">
-      <a href="./auth/login.php" class="px-4 py-2 border border-primary rounded-lg hover:bg-primary hover:text-white transition">
+      
+      <a href="./auth/login.php" class="px-4 py-2 border border-primary rounded-lg hover:bg-primary hover:text-white transition <?= isset($_SESSION["user_id"])?'hidden':'flex'?>">
         Connexion
       </a>
-      <a href="./auth/register.php" class="px-4 py-2 bg-accent text-white rounded-lg hover:bg-green-600 transition">
+      <a href="./auth/register.php" class="px-4 py-2  rounded-lg hover:bg-green-600 transition <?= isset($_SESSION["user_id"])?'hidden':'flex'?>">
         Inscription
       </a>
+      <!-- <a href="./auth/register.php" name="logout" class="px-4 py-2  rounded-lg hover:bg-green-600 transition <?= !isset($_SESSION["user_id"])?'hidden':'flex'?>">
+        deconnecter
+      </a> -->
+      <form action="" method="POST">       
+          <button type="submit" name="logout" 
+              class="nav-btn px-3 py-1 rounded-lg hover:bg-blue-100 transition cursor-pointer <?= isset($_SESSION["user_id"])?"block":"hidden"?>">
+              deconnecter
+          </button>
+      </form>
+
     </div>
   </div>
 </header>

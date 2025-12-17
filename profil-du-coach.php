@@ -1,3 +1,7 @@
+<?php
+$RolePage="coach";
+require './session.php';
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -10,7 +14,7 @@
 <body class="bg-gray-50 min-h-screen flex flex-col">
 
   <!-- Navigation -->
-  <?php require('./header.php'); ?>
+  <?php require('./components/header.php'); ?>
 
   <!-- Page Content -->
   <section class="flex-1 py-10">
@@ -24,8 +28,8 @@
           <p class="text-gray-500 text-sm">Coach Fitness & Cardio</p>
         </div>
         <nav class="mt-4 flex flex-col space-y-2">
-          <a href="./dashboard.php" class="text-green-600 font-semibold hover:underline">Dashboard</a>
-          <a href="./profil.php" class="text-green-600 font-semibold hover:underline">Mon Profil</a>
+          <a href="./coach-dashboard.php" class="text-green-600 font-semibold hover:underline">Dashboard</a>
+          <a href="#" class="text-green-600 font-semibold hover:underline">Mon Profil</a>
           <a href="./coach-availability.php" class="text-green-600 font-semibold hover:underline">Disponibilités</a>
         </nav>
       </aside>
@@ -72,7 +76,7 @@
   </section>
 
   <!-- Footer -->
-  <?php require('./footer.php'); ?>
+  <?php require('./components/footer.php'); ?>
 
 </body>
 </html>

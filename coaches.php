@@ -1,3 +1,7 @@
+<?php
+$RolePage="coach";
+require './session.php';
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>

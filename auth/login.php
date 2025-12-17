@@ -1,8 +1,6 @@
 <?php
 session_start();
 require "../connect.php";
-
-
 $erreur="";
 if (isset($_POST["Seconnecter"])) {
   #vilider les champs
@@ -27,7 +25,6 @@ if (isset($_POST["Seconnecter"])) {
         $_SESSION["role"]=$user['role'];
         header("Location: ../index.php");
         exit();
-        
       }else{
         $erreur="mot de passe incorrect !";
       }
@@ -142,11 +139,7 @@ require('../components/footer.php')
       }
     });
 
-    // Form submission (dummy)
-    // document.getElementById('loginForm').addEventListener('submit', function(e) {
-    //   e.preventDefault();
-    //   alert('Connexion réussie !');
-    // });
+    
 
     // validation
     let email = document.getElementById('email');
