@@ -224,13 +224,13 @@ require('./components/header.php')
             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Confirmée</span>
           </td>
           <td class="px-6 py-4 text-center space-x-2">
-            <button class="text-blue-500 hover:text-blue-700" title="Détails">
+            <button class="text-blue-500 hover:text-blue-700 open-modal" title="Détails">
               <i class="fas fa-eye"></i>
             </button>
-            <button class="text-yellow-500 hover:text-yellow-700" title="Modifier">
+            <button class="text-yellow-500 hover:text-yellow-700 " title="Modifier">
               <i class="fas fa-pen"></i>
             </button>
-            <button class="text-red-500 hover:text-red-700" title="Annuler">
+            <button class="text-red-500 hover:text-red-700 " title="Annuler">
               <i class="fas fa-trash"></i>
             </button>
           </td>
@@ -246,7 +246,7 @@ require('./components/header.php')
             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">En attente</span>
           </td>
           <td class="px-6 py-4 text-center space-x-2">
-            <button class="text-blue-500 hover:text-blue-700" title="Détails">
+            <button class="text-blue-500 hover:text-blue-700 open-modal" title="Détails">
               <i class="fas fa-eye"></i>
             </button>
             <button class="text-yellow-500 hover:text-yellow-700" title="Modifier">
@@ -268,7 +268,7 @@ require('./components/header.php')
             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Annulée</span>
           </td>
           <td class="px-6 py-4 text-center space-x-2">
-            <button class="text-blue-500 hover:text-blue-700" title="Détails">
+            <button class="text-blue-500 hover:text-blue-700 open-modal" title="Détails">
               <i class="fas fa-eye"></i>
             </button>
             <button class="text-yellow-500 hover:text-yellow-700" title="Modifier">
@@ -297,7 +297,6 @@ require('./components/footer.php')
 <div id="reservationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
   <div class="bg-white rounded-xl shadow-lg w-11/12 md:w-2/3 lg:w-1/2">
     
-    <!-- Modal Header -->
     <div class="flex justify-between items-center border-b px-6 py-4">
       <h2 class="text-xl font-bold text-primary">Détails de la réservation</h2>
       <button id="closeModal" class="text-gray-500 hover:text-gray-700">
@@ -305,7 +304,6 @@ require('./components/footer.php')
       </button>
     </div>
 
-    <!-- Modal Body -->
     <div class="px-6 py-4 space-y-4">
       <div class="flex items-center space-x-4">
         <img src="https://via.placeholder.com/80" alt="Coach" class="rounded-full">
@@ -340,7 +338,6 @@ require('./components/footer.php')
       </div>
     </div>
 
-    <!-- Modal Footer -->
     <div class="px-6 py-4 border-t flex justify-end">
       <button id="closeModalBtn" class="btn btn-outline px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition">
         Fermer
@@ -350,5 +347,31 @@ require('./components/footer.php')
 </div>
 
 <script>
+  let modal = document.getElementById('reservationModal');
+  let closeModal = document.getElementById('closeModal');
+  let btnCloseModal = document.getElementById('closeModalBtn');
+
+  let buttonsOpen = document.querySelectorAll('.open-modal');
+
+  buttonsOpen.forEach(btns=>{
+
+    btns.addEventListener('click', ()=>{
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    });
+
+  })
+
+  btnCloseModal.addEventListener('click', ()=>{
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    });
+   closeModal.addEventListener('click', ()=>{
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    });
+  
+
   
 </script>
+
