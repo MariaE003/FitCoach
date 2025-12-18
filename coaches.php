@@ -2,6 +2,32 @@
 $RolePage="client";
 require './session.php';
 require './connect.php';
+
+
+
+
+$reqCoach=$connect->prepare('SELECT c.id,c.*,GROUP_CONCAT(s.nom_specialite SEPARATOR", ") as specialite FROM coach c
+
+                              inner join specialite_coach sc on c.id=sc.id_coach
+
+                              inner join specialite s on s.id=sc.id_specialite
+                              group by c.id
+                              
+  ');
+
+if ($reqCoach->execute()) {
+  # code...
+  $res=$reqCoach->get_result();
+  $coach=$res->fetch_all(MYSQLI_ASSOC);
+
+  // var_dump($coach["nom_specialite"]);
+
+}
+
+// foreach($coach as $coa){
+// $coa=[];
+//   echo $coa[]["nom_specialite"];
+// }
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -77,11 +103,56 @@ require('./components/header.php');
   <div id="coachesGrid" class="grid md:grid-cols-3 gap-10">
 
     <!-- CARD -->
-   
-    
+    <?php
+    foreach($coach as $coa){
+    // var_dump($coa["photo"]);
+
+    ?>
+    <div class="coach-card bg-white rounded-xl shadow hover:shadow-xl transition overflow-hidden"
+    data-discipline="football" data-rating="5">
+      <div class="relative">
+        <img src="<?=$coa["photo"]?>" class="w-full h-60 object-cover">
+        <span class="absolute top-4 left-4 bg-accent text-white px-3 py-1 rounded-full text-sm font-semibold">
+          Certifié
+        </span>
+      </div>
+
+      <div class="p-6">
+        <h3 class="text-xl font-bold mb-1"><?=$coa["nom"]." ".$coa["prenom"]?></h3>
+        <p class="text-gray-500 mb-3">
+          <i class="fas fa-futbol text-accent"></i>
+          <?php
+            // for($i=0;$i<$coach["nom_specialite"];$i++){
+            //   $coach["nom_specialite"][$i];
+            // }
+            echo $coa["specialite"];
+          ?>
+        </p>
+        
+
+        <!-- <div class="flex items-center gap-2 text-yellow-400 mb-4">
+          ★★★★★ <span class="text-gray-500 text-sm">(124 avis)</span>
+        </div> -->
+
+        <div class="flex justify-between text-sm text-gray-500 mb-4">
+          <span><i class="fas fa-clock"></i> <?= $coa['experience_en_annee']?></span>
+          <span><i class="fas fa-users"></i> 250+ sportifs</span>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <span class="text-lg font-bold text-primary"><?=$coa['prix']?></span>
+          <a href="./coach-profile.php/<?=$coa["id"]?>" class="bg-accent text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
+            Voir profil
+          </a>
+        </div>
+      </div>
+    </div>
+    <?php
+    }
+    ?>
 
     <!-- DUPLICATE CARD -->
-    <div class="coach-card bg-white rounded-xl shadow hover:shadow-xl transition overflow-hidden"
+    <!-- <div class="coach-card bg-white rounded-xl shadow hover:shadow-xl transition overflow-hidden"
          data-discipline="tennis" data-rating="5">
       <div class="relative">
         <img src="https://via.placeholder.com/400x300" class="w-full h-60 object-cover">
@@ -109,7 +180,7 @@ require('./components/header.php');
           </a>
         </div>
       </div>
-    </div>
+    </div> -->
 
   </div>
 
