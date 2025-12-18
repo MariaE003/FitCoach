@@ -5,6 +5,7 @@ require './connect.php';
 
 
 
+// group_concat => concatener les valeur dans une seul chaines
 
 $reqCoach=$connect->prepare('SELECT c.id,c.*,GROUP_CONCAT(s.nom_specialite SEPARATOR", ") as specialite FROM coach c
 
@@ -122,9 +123,6 @@ require('./components/header.php');
         <p class="text-gray-500 mb-3">
           <i class="fas fa-futbol text-accent"></i>
           <?php
-            // for($i=0;$i<$coach["nom_specialite"];$i++){
-            //   $coach["nom_specialite"][$i];
-            // }
             echo $coa["specialite"];
           ?>
         </p>
@@ -141,7 +139,7 @@ require('./components/header.php');
 
         <div class="flex justify-between items-center">
           <span class="text-lg font-bold text-primary"><?=$coa['prix']?></span>
-          <a href="./coach-profile.php/<?=$coa["id"]?>" class="bg-accent text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
+          <a href="./coach-profile.php?idProfilCoach=<?=$coa["id"]?>" class="bg-accent text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
             Voir profil
           </a>
         </div>
@@ -150,39 +148,7 @@ require('./components/header.php');
     <?php
     }
     ?>
-
-    <!-- DUPLICATE CARD -->
-    <!-- <div class="coach-card bg-white rounded-xl shadow hover:shadow-xl transition overflow-hidden"
-         data-discipline="tennis" data-rating="5">
-      <div class="relative">
-        <img src="https://via.placeholder.com/400x300" class="w-full h-60 object-cover">
-        <span class="absolute top-4 left-4 bg-accent text-white px-3 py-1 rounded-full text-sm font-semibold">
-          Certifié
-        </span>
-      </div>
-
-      <div class="p-6">
-        <h3 class="text-xl font-bold mb-1">Sarah El Amrani</h3>
-        <p class="text-gray-500 mb-3">
-          <i class="fas fa-table-tennis-paddle-ball text-accent"></i> Tennis
-        </p>
-        <div class="flex items-center gap-2 text-yellow-400 mb-4">
-          ★★★★★ <span class="text-gray-500 text-sm">(87 avis)</span>
-        </div>
-        <div class="flex justify-between text-sm text-gray-500 mb-4">
-          <span><i class="fas fa-clock"></i> 6 ans</span>
-          <span><i class="fas fa-users"></i> 180+</span>
-        </div>
-        <div class="flex justify-between items-center">
-          <span class="text-lg font-bold text-primary">250 DH</span>
-          <a href="./coach-profile.php" class="bg-accent text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
-            Voir profil
-          </a>
-        </div>
-      </div>
-    </div> -->
-
-  </div>
+</div>
 
   <div id="noResults" class="hidden text-center mt-16 text-gray-500">
     <i class="fas fa-search text-4xl mb-4"></i>
@@ -194,7 +160,6 @@ require('./components/header.php');
 <?php
 require('./components/footer.php')
 ?>
-
 
 
 <!-- JS FILTER -->

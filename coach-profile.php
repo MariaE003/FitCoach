@@ -1,3 +1,78 @@
+<?php
+$RolePage="client";
+require './session.php';
+require './connect.php';
+
+$idcoach=$_GET["idProfilCoach"];
+// echo $idcoach;
+
+// les info du profil 
+$req=$connect->prepare("SELECT * FROM coach c where c.id=?");
+
+$req->bind_param("s",$idcoach);
+$req->execute();
+$resu=$req->get_result();
+$profil=$resu->fetch_assoc();
+
+
+
+// 
+
+// les specialite
+$reqSpec=$connect->prepare("SELECT GROUP_CONCAT(s.nom_specialite SEPARATOR ', ') AS specialite
+                        FROM coach c
+                        inner join specialite_coach sc on sc.id_coach=c.id
+                        inner join specialite s on sc.id_specialite=s.id
+
+                        where c.id=?
+                        group by c.id
+                        ");
+
+$reqSpec->bind_param("s",$idcoach);
+$reqSpec->execute();
+$resuSpec=$reqSpec->get_result();
+$SpecialiteInfo=$resuSpec->fetch_assoc();
+
+// 
+
+
+
+
+
+// certificat
+$reqCertif=$connect->prepare("SELECT c.*,
+
+                        GROUP_CONCAT(ce.nom_certif SEPARATOR ', ') AS nomCertif,
+
+                        GROUP_CONCAT(ce.etablissement SEPARATOR ', ') AS etablissement,
+
+                        GROUP_CONCAT(ce.annee SEPARATOR ', ') AS anneeCertif 
+
+                        FROM coach c
+                        inner join certification ce on ce.id_coach=c.id
+                        where c.id=?
+                        group by c.id
+                        ");
+
+$reqCertif->bind_param("s",$idcoach);
+$reqCertif->execute();
+$resuCertif=$reqCertif->get_result();
+$Certif=$resuCertif->fetch_assoc();
+
+
+
+// le nombre des certif de ce coach
+$count=$connect->prepare("SELECT count(*) as nbr FROM coach c 
+INNER JOIN certification ce ON ce.id_coach=c.id where c.id=? group by c.id
+");
+$count->bind_param("s",$idcoach);
+$count->execute();
+$res=$count->get_result();
+$nbr=$res->fetch_assoc();
+// echo $nbr["nbr"];
+
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -28,6 +103,8 @@
 <!-- NAVBAR -->
 <?php
 require('./components/header.php');
+
+// foreach($profil as $prof){
 ?>
 
 <!-- HEADER -->
@@ -37,7 +114,7 @@ require('./components/header.php');
     <!-- Avatar -->
     <div class="flex justify-center">
       <div class="relative">
-        <img src="https://via.placeholder.com/200"
+        <img src="<?=$profil["photo"];?>"
              class="w-48 h-48 rounded-full border-4 border-accent object-cover">
         <span class="absolute bottom-2 right-2 bg-accent text-white p-2 rounded-full">
           <i class="fas fa-check"></i>
@@ -47,10 +124,10 @@ require('./components/header.php');
 
     <!-- Infos -->
     <div class="md:col-span-2">
-      <h1 class="text-4xl font-extrabold mb-2">Mohammed Benali</h1>
+      <h1 class="text-4xl font-extrabold mb-2"><?=$profil["nom"]." ".$profil["prenom"]?></h1>
       <p class="text-gray-300 mb-4">
         <i class="fas fa-futbol text-accent"></i>
-        Football & Préparation Physique
+        <?= $SpecialiteInfo["specialite"];?>
       </p>
 
       <div class="flex items-center gap-3 text-yellow-400 mb-4">
@@ -58,9 +135,9 @@ require('./components/header.php');
       </div>
 
       <div class="grid sm:grid-cols-3 gap-4 text-sm text-gray-200">
-        <div><i class="fas fa-clock text-accent"></i> 8 ans d'expérience</div>
+        <div><i class="fas fa-clock text-accent"></i> <?=$profil["experience_en_annee"]?> ans d'expérience</div>
         <div><i class="fas fa-users text-accent"></i> 250+ sportifs</div>
-        <div><i class="fas fa-certificate text-accent"></i> 15 certifications</div>
+        <div><i class="fas fa-certificate text-accent"></i> <?= $nbr["nbr"]?> certifications</div>
       </div>
     </div>
 
@@ -79,9 +156,8 @@ require('./components/header.php');
         <i class="fas fa-user text-accent"></i> À propos
       </h2>
       <p class="text-gray-600 leading-relaxed">
-        Coach professionnel avec plus de 8 ans d'expérience dans la formation
-        d'athlètes. J’accompagne mes sportifs avec des programmes personnalisés
-        selon leurs objectifs physiques et mentaux.
+        <?=$profil["bio"];?>
+        
       </p>
     </div>
 
@@ -91,10 +167,19 @@ require('./components/header.php');
         <i class="fas fa-star text-accent"></i> Spécialités
       </h2>
       <div class="flex flex-wrap gap-3">
-        <span class="px-4 py-2 bg-accent/10 text-accent rounded-full">Technique</span>
-        <span class="px-4 py-2 bg-accent/10 text-accent rounded-full">Préparation physique</span>
-        <span class="px-4 py-2 bg-accent/10 text-accent rounded-full">Coaching mental</span>
-        <span class="px-4 py-2 bg-accent/10 text-accent rounded-full">Tactique</span>
+        <?php
+        // $spec=$profil["specialite"];
+        //string => array (specialites) with explode(",",$tring)
+        $spec=$SpecialiteInfo["specialite"];
+        $ArraySpacilite=explode(",",$spec);
+        foreach ($ArraySpacilite as $specialite) {
+          // echo $specialite."<br>";
+                
+        ?>
+        <span class="px-4 py-2 bg-accent/10 text-accent rounded-full"><?= $specialite ?></span>
+        <?php
+        }
+        ?>
       </div>
     </div>
 
@@ -104,20 +189,42 @@ require('./components/header.php');
         <i class="fas fa-certificate text-accent"></i> Certifications
       </h2>
       <ul class="space-y-4">
-        <li class="flex gap-4">
+        <!-- // -->
+          <?php
+          // les certifs du coach
+
+          $cerName=$Certif["nomCertif"];
+          $certificationName=explode(",",$cerName);
+
+          $cerEtab=$Certif["etablissement"];
+          $certificationEtabli=explode(",",$cerEtab);
+
+          $cerAnnee=$Certif["anneeCertif"];
+          $certificationAnnee=explode(",",$cerAnnee);
+
+
+          for ($i=0; $i <count($certificationName) ; $i++) { 
+          // echo $certificationName[$i] ."-". $certificationEtabli[$i] ."-". $certificationAnnee[$i] ."<br>" ;
+          
+           ?>
+           <li class="flex gap-4">
           <i class="fas fa-check-circle text-accent text-xl"></i>
           <div>
-            <strong>Licence UEFA B</strong>
-            <p class="text-gray-500 text-sm">FRMF – 2020</p>
+            <strong><?=$certificationName[$i]?></strong>
+            <p class="text-gray-500 text-sm"><?=$certificationEtabli[$i] ?> – <?=$certificationAnnee[$i]?></p>
           </div>
-        </li>
-        <li class="flex gap-4">
+          </li>
+          <?php
+          }
+          ?>
+
+        <!-- <li class="flex gap-4">
           <i class="fas fa-check-circle text-accent text-xl"></i>
           <div>
             <strong>Préparateur Physique</strong>
             <p class="text-gray-500 text-sm">IRFC – 2018</p>
           </div>
-        </li>
+        </li> -->
       </ul>
     </div>
 
@@ -129,7 +236,7 @@ require('./components/header.php');
     <!-- BOOKING -->
     <div class="bg-white rounded-xl shadow p-6 sticky top-24">
       <div class="text-center mb-6">
-        <span class="text-3xl font-extrabold text-primary">200 DH</span>
+        <span class="text-3xl font-extrabold text-primary"><?=$profil["prix"];?> DH</span>
         <p class="text-gray-500">/ séance</p>
       </div>
 
@@ -141,9 +248,9 @@ require('./components/header.php');
       <hr class="my-6">
 
       <ul class="space-y-3 text-sm text-gray-600">
-        <li><i class="fas fa-phone text-accent"></i> +212 6 12 34 56 78</li>
-        <li><i class="fas fa-clock text-accent"></i> Séance : 60 minutes</li>
-        <li><i class="fas fa-map-marker-alt text-accent"></i> Fès</li>
+        <li><i class="fas fa-phone text-accent"></i> <?=$profil["telephone"];?></li>
+        <li><i class="fas fa-clock text-accent"></i> Séance : 1 heurs</li>
+        <li><i class="fas fa-map-marker-alt text-accent"></i> Safi</li>
         <li><i class="fas fa-language text-accent"></i> FR / AR</li>
       </ul>
     </div>
