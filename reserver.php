@@ -1,3 +1,7 @@
+<?php
+$RolePage="client";
+require './session.php';
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>

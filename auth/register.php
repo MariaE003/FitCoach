@@ -19,8 +19,19 @@ if (isset($_POST["inscrir"])) {
     // $sqlRequette->execute();
 
     if ($sqlRequette->execute()){
-      header("Location:login.php");
-      exit();
+      $userId=$connect->insert_id;
+      if ($role==="client") {
+      $sqlRequetteClient=$connect->prepare("INSERT INTO client(id_user, nom, prenom, telephone) VALUES (?,?,?,?)");
+      $sqlRequetteClient->bind_param("ssss",$userId,$lastName,$firstname,$phone);
+      $sqlRequetteClient->execute();
+    }
+    if ($role==="coach") {
+      $sqlRequetteClient=$connect->prepare("INSERT INTO coach(id_user, nom, prenom, telephone) VALUES (?,?,?,?)");
+      $sqlRequetteClient->bind_param("ssss",$userId,$lastName,$firstname,$phone);
+      $sqlRequetteClient->execute();
+    }
+    header("Location:login.php");
+    exit();
     }
 
   }
@@ -40,7 +51,7 @@ if (isset($_POST["inscrir"])) {
 <body class="bg-gray-50 min-h-screen flex flex-col">
   <!-- Navigation -->
   <?php
-require('../components/header.php')
+require('../components/header.php');
 ?>
 
   <!-- Register Section -->

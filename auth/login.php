@@ -23,6 +23,13 @@ if (isset($_POST["Seconnecter"])) {
       if (password_verify($password,$user['password'])) {
         $_SESSION["user_id"]=$user['id'];
         $_SESSION["role"]=$user['role'];
+
+        // si le role est coach il coit completer leur profil
+        if ($user['role']==="coach"){
+        header("Location: ./addProfilCoach.php");
+        exit();
+        }
+
         header("Location: ../index.php");
         exit();
       }else{
