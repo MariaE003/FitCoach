@@ -1,6 +1,73 @@
 <?php
 $RolePage="client";
 require './session.php';
+require './connect.php';
+
+$idcoach=$_GET["idProfilCoach"];
+$id_user=$_SESSION["user_id"];
+// echo $id_user;
+
+// id client
+$req1=$connect->prepare("SELECT id FROM client where id_user=?");
+$req1->bind_param("i",$id_user);
+$req1->execute();
+$res1=$req1->get_result();
+$id_client=$res1->fetch_assoc();
+// echo $res2["id"];
+
+
+$req=$connect->prepare("SELECT * FROM disponibilite where id_coach=? and disponible=1");
+$req->bind_param("i",$idcoach);
+$req->execute();
+$res=$req->get_result();
+$dispoRows=$res->fetch_all(MYSQLI_ASSOC);
+
+
+// grouper les times par dates
+$dispoLignes=[];
+foreach ($dispoRows as $dispo) {
+  $date=$dispo["date"];
+  $time=$dispo["heure_debut"]."-".$dispo["heure_fin"];
+  if (!isset($dispoLignes[$date])) {
+    $dispoLignes[$date]=[];
+  }
+  $dispoLignes[$date][]=$time;  
+}
+
+
+// virifier 
+// if (isset($__POST[""])) {
+//   # code...
+// }
+// 
+if (isset($_POST["reserver"])) {
+  if (!empty($_POST["date"])&&!empty($_POST["Hdebut"])&&!empty($_POST["HFin"])&&!empty($_POST["objectif"])) {
+    $date=$_POST["date"];
+    $Hdebut=$_POST["Hdebut"];
+    $HFin=$_POST["HFin"];
+    $objectif=$_POST["objectif"];
+    $idDispo=$_POST["idDispo"];
+
+    // inserer la reservation 
+    $reqReser=$connect->prepare("INSERT INTO reservation 
+
+    (id_client, id_coach, id_disponibilite,heure_debut, heure_fin, objectif, date)
+
+    VALUES(?,?,?,?,?,?,?)");
+    
+    $reqReser->bind_param("iiissss",$id_client,$idcoach,$idDispo,$Hdebut,$HFin,$objectif,$date);
+
+    if ($reqReser->execute()) {
+      // modifier disponibiliter 
+      $disponible = 0;
+      $reqDis=$connect->prepare("UPDATE disponibilite set disponible=? where id_coach=? and date=? and heure_debut=? and heure_fin=?");
+      $reqDis->bind_param("iisss",$disponible,$idcoach,$date,$Hdebut,$HFin);
+      $reqDis->execute();
+    }
+    
+  }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -31,13 +98,13 @@ require './session.php';
 
 <!-- NAV -->
 <?php
-require('./components/header.php')
+require('./components/header.php');
 ?>
 
 <!-- CONTENT -->
 <section class="max-w-4xl mx-auto px-6 py-16">
 
-  <a href="#" class="text-sm text-gray-500 hover:text-accent flex items-center gap-2 mb-6">
+  <a href="./coach-profile.php?idProfilCoach=<?=$idcoach?>" class="text-sm text-gray-500 hover:text-accent flex items-center gap-2 mb-6">
     <i class="fas fa-arrow-left"></i> Retour au profil
   </a>
 
@@ -46,121 +113,148 @@ require('./components/header.php')
     <!-- FORM -->
     <div class="md:col-span-2">
       <h1 class="text-3xl font-bold mb-6">
-        <i class="fas fa-calendar-plus text-accent"></i> Réserver une séance
+        <i class="fas fa-calendar-plus text-accent"></i> les moments disponible
       </h1>
+      <!-- <a href="#" class="bg-neutral-primary-soft block max-w-sm p-6 border border-default rounded-base shadow-xs hover:bg-neutral-secondary-medium">
+          <h5 class="mb-3 text-2xl font-semibold tracking-tight text-heading leading-8">Noteworthy technology acquisitions 2021</h5>
+          <p class="text-body">Here are the biggest technology acquisitions of 2025 so far, in reverse chronological order.</p>
+      </a> -->
+      <!-- <h2 class="text-2xl font-bold mb-6 text-gray-800">
+        Disponibilités du coach
+      </h2> -->
+      
+      <!-- Date Card -->
+      <?php
+    foreach ($dispoLignes as $date=>$time) {
+      
+      ?>
+      <div class="max-w-3xl mx-auto p-6">
+        <div class="mb-6 bg-white shadow rounded-xl p-5">
+          <h3 class="text-lg font-semibold text-gray-700 mb-4">
+            <!-- 📅 Lundi 20 Décembre 2025 -->
+            <?php echo $date ?>
+          </h3>
+
+          <div class="flex flex-wrap gap-3">
+            <?php foreach ($time as $oneTime) {
+              $timesPartes=explode("-",$oneTime);
+          ?>
+            <button id="time" class="time px-4 py-2 rounded-lg border border-green-500 text-green-600 hover:bg-green-500 hover:text-white transition" 
+            data-date="<?=$date?>" data-start="<?=$timesPartes[0]?>" data-end="<?=$timesPartes[1]?>" data-id="<?=$dispo['id']?>">
+              <?php echo $oneTime ?>
+            </button>
+            
+            <?php
+   }
+   ?></div>
+ </div>
+ </div>
+ <?php
+  }
+  ?>
+
+      <h2 class="text-3xl font-bold mb-6">
+        <i class="fas fa-calendar-plus text-accent"></i> Réserver une séance
+      </h2>
+
+      <!-- les dispo de ce coach -->
+       
 
       <!-- ALERT -->
       <div id="availabilityAlert" class="hidden mb-6 p-4 rounded-lg text-sm"></div>
-
-      <form class="space-y-6">
-
+      <form class="space-y-6" method="POST">
+        <input type="hidden" name="idDispo" id="idDispo" value="">
         <div>
           <label class="block mb-1 font-medium">Date</label>
-          <input type="date" id="date"
+          <input type="date" id="date" readonly name="date"
             class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent">
         </div>
 
         <div>
-          <label class="block mb-1 font-medium">Heure</label>
-          <input type="time" id="time"
+          <label class="block mb-1 font-medium">Heure Debut</label>
+          <input type="time" id="timeStart" name="Hdebut" readonly
             class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent">
         </div>
-
         <div>
-          <label class="block mb-1 font-medium">Type de séance</label>
-          <select class="w-full border rounded-lg px-4 py-2">
-            <option>Individuelle</option>
-            <option>Groupe</option>
-          </select>
+          <label class="block mb-1 font-medium">Heure Fin</label>
+          <input type="time" id="timeEnd" name="HFin" readonly
+            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent">
         </div>
 
         <div>
           <label class="block mb-1 font-medium">Objectifs</label>
-          <textarea rows="3"
+          <textarea rows="3" name="objectif" id="objectif"
             class="w-full border rounded-lg px-4 py-2"
             placeholder="Perte de poids, technique, endurance..."></textarea>
         </div>
 
         <div class="flex gap-4">
-          <button type="button"
-            onclick="checkAvailability()"
-            class="px-6 py-3 border rounded-lg hover:bg-gray-100">
-            Vérifier disponibilité
-          </button>
 
           <button type="submit"
             id="confirmBtn"
+            name="reserver"
             disabled
-            class="px-6 py-3 bg-accent text-white rounded-lg font-semibold opacity-50 cursor-not-allowed">
+            class="px-6 py-3 bg-accent text-white rounded-lg font-semibold  ">
             Confirmer réservation
           </button>
         </div>
 
       </form>
     </div>
-
-    <!-- SIDEBAR -->
-    <div class="bg-gray-50 rounded-xl p-6">
-      <h3 class="font-bold mb-4">Coach</h3>
-      <div class="flex items-center gap-3 mb-6">
-        <img src="https://via.placeholder.com/60" class="rounded-full">
-        <div>
-          <strong>Mohammed Benali</strong>
-          <p class="text-sm text-gray-500">Football</p>
-        </div>
-      </div>
-
-      <div class="border-t pt-4 space-y-2 text-sm">
-        <div class="flex justify-between">
-          <span>Durée</span>
-          <span>60 min</span>
-        </div>
-        <div class="flex justify-between font-bold">
-          <span>Prix</span>
-          <span>200 DH</span>
-        </div>
-      </div>
-    </div>
-
   </div>
 </section>
 
 <?php
 require('./components/footer.php')
 ?>
-
 <script>
-  function checkAvailability() {
-    const date = document.getElementById('date').value;
-    const time = document.getElementById('time').value;
-    const alertBox = document.getElementById('availabilityAlert');
-    const confirmBtn = document.getElementById('confirmBtn');
+  let dateF=document.querySelector("#date"); 
+  let timeStart=document.querySelector("#timeStart"); 
+  let timeEnd=document.querySelector("#timeEnd"); 
+  let objectif=document.querySelector("#objectif"); 
+  let allInputs=document.querySelectorAll("#date,#timeStart,#timeEnd,#objectif");
+  let time=document.querySelectorAll("#time");
+  // btn
+  let confirmBtn=document.querySelector("#confirmBtn"); 
+  // input hidden
+  let input=document.querySelector("#idDispo"); 
 
-    if (!date || !time) {
-      alertBox.className = "mb-6 p-4 rounded-lg bg-red-100 text-red-700";
-      alertBox.textContent = "Veuillez choisir une date et une heure.";
-      alertBox.classList.remove('hidden');
-      return;
-    }
 
-    // MOCK disponibilité
-    const available = time !== "14:00";
+  let times=document.querySelectorAll(".time"); 
+  times.forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      let date=btn.dataset.date;
+      let startTime=btn.dataset.start
+      let endTime=btn.dataset.end
+       let idDispo = btn.dataset.id; 
 
-    if (available) {
-      alertBox.className = "mb-6 p-4 rounded-lg bg-green-100 text-green-700";
-      alertBox.textContent = "Coach disponible pour ce créneau.";
-      confirmBtn.disabled = false;
-      confirmBtn.classList.remove('opacity-50','cursor-not-allowed');
-    } else {
-      alertBox.className = "mb-6 p-4 rounded-lg bg-red-100 text-red-700";
-      alertBox.textContent = "Coach non disponible à cette heure.";
-      confirmBtn.disabled = true;
-      confirmBtn.classList.add('opacity-50','cursor-not-allowed');
-    }
+      dateF.value=date;
+      timeStart.value=startTime;
+      timeEnd.value=endTime;
+      confirmBtn.disabled = objectif.value.trim() === "";
 
-    alertBox.classList.remove('hidden');
-  }
+      input.value = idDispo;
+    })
+  })
+  objectif.addEventListener("click",()=>{
+    confirmBtn.disabled = !(dateF.value && timeStart.value && timeEnd.value && objectif.value.trim());
+
+  });
+
+  // confirmBtn.addEventListener("click",()=>{
+  //   let id=confirmBtn.dataset.id;
+  //   input.value=id;   
+  //   console.log(input) 
+  // });
 </script>
-
 </body>
 </html>
+
+
+
+
+
+
+
+
+

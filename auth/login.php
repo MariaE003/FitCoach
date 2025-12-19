@@ -17,15 +17,18 @@ if (isset($_POST["Seconnecter"])) {
 
     //prendre les resultat
     $Result=$sqlRequette->get_result();
-
     if ($Result->num_rows==1) {
       $user=$Result->fetch_assoc();
       if (password_verify($password,$user['password'])) {
         $_SESSION["user_id"]=$user['id'];
         $_SESSION["role"]=$user['role'];
-
-        // si le role est coach il coit completer leur profil
-        if ($user['role']==="coach"){
+        
+        $req=$connect->prepare("SELECT c.experience_en_annee FROM coach c
+        INNER JOIN users u ON u.id=c.id_user WHERE c.experience_en_annee IS NULL
+        ");
+        // if($req->execute())
+        // si le role est coach il Doit completer leur profil SI IL NA PAS COMPLETER ENCOR
+        if ($user['role']==="coach" && !$req->execute()){
         header("Location: ./addProfilCoach.php");
         exit();
         }

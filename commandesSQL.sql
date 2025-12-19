@@ -86,7 +86,7 @@ CREATE TABLE avis (
 
 
 
---iserer des donnees
+--INSERER LES DONNEE
 
 -- INSERT USERS
 
@@ -134,7 +134,7 @@ INSERT INTO certification (id_coach, nom_certif, annee, etablissement) VALUES
 
 
 -- INSERT DISPONIBILITES
-INSERT INTO disponibilite (id_coach, date, heure_debut, heure_fin) VALUES
+INSERT INTO disponibilite (idcoach, date, heure_debut, heure_fin) VALUES
 (1, '2025-01-10', '09:00:00', '11:00:00'),
 (1, '2025-01-11', '14:00:00', '16:00:00'),
 (2, '2025-01-10', '10:00:00', '12:00:00');
@@ -158,3 +158,7 @@ INSERT INTO avis (id_client, id_reservation, content, note) VALUES
 -- ajouter column prix
 ALTER TABLE coach 
 ADD COLUMN prix float;
+
+
+ALTER TABLE disponibilite
+add COLUMN disponible boolean DEFAULT true

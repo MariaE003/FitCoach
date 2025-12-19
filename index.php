@@ -35,7 +35,7 @@ require './session.php';
 
 <!-- NAVBAR -->
 <?php
-require('./components/header.php')
+require('./components/header.php');
 ?>
 
 <!-- HERO -->

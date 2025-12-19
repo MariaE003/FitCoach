@@ -5,8 +5,8 @@ require './connect.php';
 
 $idcoach=$_GET["idProfilCoach"];
 // echo $idcoach;
-
-// les info du profil 
+if (isset($idcoach)) {
+ // les info du profil 
 $req=$connect->prepare("SELECT * FROM coach c where c.id=?");
 
 $req->bind_param("s",$idcoach);
@@ -240,7 +240,7 @@ require('./components/header.php');
         <p class="text-gray-500">/ séance</p>
       </div>
 
-      <a href="#"
+      <a href="./reserver.php?idProfilCoach=<?=$idcoach?>"
          class="block w-full text-center bg-accent text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition">
         <i class="fas fa-calendar-check"></i> Choisir un créneau
       </a>
@@ -260,6 +260,9 @@ require('./components/header.php');
 
 <!-- FOOTER -->
 <?php
+}else{
+  header("Location: ./index.php");
+}
 require('./components/footer.php')
 ?>
 

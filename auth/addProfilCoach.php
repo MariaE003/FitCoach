@@ -39,7 +39,7 @@ if (isset($_POST["submitProfil"])) {
     //ajouter les autre champs du coach les coach
     // echo $id_coach;
     $reqCoach=$connect->prepare("UPDATE coach SET experience_en_annee=?,photo=?,bio=?,prix=? WHERE id=?");
-    $reqCoach->bind_param("sssss",$experience,$photo,$bio,$prix,$id_coach);
+    $reqCoach->bind_param("sssdi",$experience,$photo,$bio,$prix,$id_coach);
     $reqCoach->execute();
     // if($reqCoach->execute()){
     //   echo"le coach modifier avec succes" ;
@@ -62,7 +62,7 @@ if (isset($_POST["submitProfil"])) {
     // ajouter les specialite
     for($i=0; $i <count($id_specialite) ;$i++){
         $req=$connect->prepare("INSERT INTO specialite_coach (id_coach, id_specialite) VALUES(?,?)");
-        $req->bind_param("ss",$id_coach,$id_specialite[$i]);
+        $req->bind_param("ii",$id_coach,$id_specialite[$i]);
         $req->execute();
     }
 
@@ -72,7 +72,7 @@ if (isset($_POST["submitProfil"])) {
         $annee=$cert["annee"][$i];
         $etablissement=$cert["etablissement"][$i];
         $reqcertif=$connect->prepare("INSERT INTO certification(id_coach, nom_certif, annee, etablissement) VALUES(?,?,?,?)");
-        $reqcertif->bind_param("ssss",$id_coach,$nom,$annee,$etablissement);
+        $reqcertif->bind_param("isss",$id_coach,$nom,$annee,$etablissement);
         $reqcertif->execute();
     }
 
