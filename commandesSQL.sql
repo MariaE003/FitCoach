@@ -159,6 +159,10 @@ INSERT INTO avis (id_client, id_reservation, content, note) VALUES
 ALTER TABLE coach 
 ADD COLUMN prix float;
 
-
+-- ajouter le champs disponible
 ALTER TABLE disponibilite
 add COLUMN disponible boolean DEFAULT true
+
+-- ajouter le champs email au client
+ALTER TABLE client
+add column email varchar(100);

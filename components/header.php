@@ -1,7 +1,7 @@
 <header class="bg-white shadow sticky top-0 z-50">
   <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
     <a class="flex items-center gap-3 text-2xl font-extrabold text-primary">
-      <i class="fas fa-dumbbell text-accent"></i> SportCoach
+      <i class="fas fa-dumbbell text-accent"></i> FitCoach
     </a>
     <nav class="hidden md:flex gap-8 font-medium">
       <a href="./index.php" class="hover:text-accent">Accueil</a>
@@ -20,6 +20,7 @@
       <!-- <a href="./auth/register.php" name="logout" class="px-4 py-2  rounded-lg hover:bg-green-600 transition <?= !isset($_SESSION["user_id"])?'hidden':'flex'?>">
         deconnecter
       </a> -->
+      <a href="../sportif-profil.php" class="nav-btn px-3 py-1 rounded-lg hover:bg-blue-100 transition cursor-pointer <?= isset($_SESSION["user_id"]) &&  $_SESSION["role"]==="client"  ?'flex':'hidden'?>">Profil</a>
       <form action="" method="POST">       
           <button type="submit" name="logout" 
               class="nav-btn px-3 py-1 rounded-lg hover:bg-blue-100 transition cursor-pointer <?= isset($_SESSION["user_id"])?"flex":"hidden"?>">

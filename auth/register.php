@@ -21,8 +21,8 @@ if (isset($_POST["inscrir"])) {
     if ($sqlRequette->execute()){
       $userId=$connect->insert_id;
       if ($role==="client") {
-      $sqlRequetteClient=$connect->prepare("INSERT INTO client(id_user, nom, prenom, telephone) VALUES (?,?,?,?)");
-      $sqlRequetteClient->bind_param("ssss",$userId,$lastName,$firstname,$phone);
+      $sqlRequetteClient=$connect->prepare("INSERT INTO client(id_user, nom, prenom, telephone,email) VALUES (?,?,?,?,?)");
+      $sqlRequetteClient->bind_param("sssss",$userId,$lastName,$firstname,$phone,$email);
       $sqlRequetteClient->execute();
     }
     if ($role==="coach") {
