@@ -1,3 +1,47 @@
+<?php
+$RolePage="coach";
+require './connect.php';
+require './session.php';
+
+$id_user=$_SESSION["user_id"];
+
+// $req=$connect->prepare("select * from client where id_user=?");
+// $req->bind_param("s",$id_user);
+// $req->execute();
+// $res=$req->get_result()->fetch_assoc();
+// echo $res["id"];
+$erreur="";
+
+// if (isset($_POST["save"])) {
+//   if (!empty($_POST["nom"]) && !empty($_POST["prenom"]) && !empty($_POST["email"])  && !empty($_POST["telephone"])  && !empty($_POST["password"])) {
+//   $nom=$_POST["nom"];
+//   $prenom=$_POST["prenom"];
+//   $email=$_POST["email"];
+//   $telephone=$_POST["telephone"];
+//   $password=$_POST["password"];
+//   $passW_hasher=password_hash($password,PASSWORD_BCRYPT);
+
+//   $reqUpdate=$connect->prepare("UPDATE client SET email=?,nom=?,prenom=?,telephone=? where id_user=?");
+//   $reqUpdate->bind_param("ssssi",$email,$nom,$prenom,$telephone,$id_user);
+//   $reqUpdate->execute();
+//   //modifier user
+//   $reqUpdate=$connect->prepare("UPDATE users SET email=?,password=? where id=?");
+//   $reqUpdate->bind_param("ssi",$email,$passW_hasher,$id_user);
+//   $reqUpdate->execute();
+//   $erreur="Modification reussite !";
+
+//   }
+
+// }
+
+$req=$connect->prepare("SELECT c.*,GROUP_CONCAT(s.nom_specialite SEPARATOR ', ') as specialite from coach c inner join specialite_coach sc on sc.id_coach=c.id 
+  inner join specialite s on s.id=sc.id_specialite where id_user=? 
+  group by c.id");
+$req->bind_param("s",$id_user);
+$req->execute();
+$res=$req->get_result()->fetch_assoc();
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -21,12 +65,12 @@ require('./components/header.php')
       <!-- Sidebar -->
       <aside class="md:col-span-1 bg-white rounded-xl shadow-lg p-6 flex flex-col space-y-4">
         <div class="text-center">
-          <img src="https://via.placeholder.com/100" alt="Photo Coach" class="w-24 h-24 rounded-full mx-auto mb-2">
-          <h2 class="font-bold text-lg text-gray-800">Mohammed Benali</h2>
-          <p class="text-gray-500 text-sm">Coach Fitness & Cardio</p>
+          <img src="<?=$res["photo"]?$res["photo"]:"./images.png" ?>" alt="Photo Coach" class="w-24 h-24 rounded-full mx-auto mb-2">
+          <h2 class="font-bold text-lg text-gray-800"><?=$res["prenom"]." ".$res["nom"]?></h2>
+          <p class="text-gray-500 text-sm"><?=$res["specialite"]?></p>
         </div>
         <nav class="mt-4 flex flex-col space-y-2">
-          <a href="./Mes-reservations.php" class="text-green-600 font-semibold hover:underline">Gestion des Réservations</a>
+          <a href="./Mes-reservations-coach.php" class="text-green-600 font-semibold hover:underline">Gestion des Réservations</a>
           <a href="./profil-du-coach.php" class="text-green-600 font-semibold hover:underline">Mon Profil</a>
           <a href="./coach-availability.php" class="text-green-600 font-semibold hover:underline">Disponibilités</a>
           <!-- <a href="#statistiques" class="text-green-600 font-semibold hover:underline">Statistiques</a> -->
