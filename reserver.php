@@ -12,8 +12,8 @@ $req1=$connect->prepare("SELECT id FROM client where id_user=?");
 $req1->bind_param("i",$id_user);
 $req1->execute();
 $res1=$req1->get_result();
-$id_client=$res1->fetch_assoc();
-// echo $res2["id"];
+$id_client1=$res1->fetch_assoc();
+$id_client= $id_client1["id"];
 
 
 $req=$connect->prepare("SELECT * FROM disponibilite where id_coach=? and disponible=1");
@@ -36,10 +36,7 @@ foreach ($dispoRows as $dispo) {
 
 
 // virifier 
-// if (isset($__POST[""])) {
-//   # code...
-// }
-// 
+
 if (isset($_POST["reserver"])) {
   if (!empty($_POST["date"])&&!empty($_POST["Hdebut"])&&!empty($_POST["HFin"])&&!empty($_POST["objectif"])) {
     $date=$_POST["date"];
@@ -62,7 +59,12 @@ if (isset($_POST["reserver"])) {
       $disponible = 0;
       $reqDis=$connect->prepare("UPDATE disponibilite set disponible=? where id_coach=? and date=? and heure_debut=? and heure_fin=?");
       $reqDis->bind_param("iisss",$disponible,$idcoach,$date,$Hdebut,$HFin);
-      $reqDis->execute();
+      
+      if($reqDis->execute()){
+        header("Location: Mes-reservations.php");
+        exit();
+      }
+
     }
     
   }
