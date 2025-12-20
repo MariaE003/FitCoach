@@ -1,91 +1,48 @@
 <?php
-$RolePage="client";
+$RolePage="coach";
 require './session.php';
 require './connect.php';
 // if (isset($_GET["idProfilCoach"])) {
 //   $idcoach=$_GET["idProfilCoach"];
 // }
 $id_user=$_SESSION["user_id"];
-if (isset($_POST["detailBtn"])) {
-  $deta=$_POST["detailBtn"];
-  echo $deta;
-}
+// if (isset($_POST["detailBtn"])) {
+//   $deta=$_POST["detailBtn"];
+//   // echo $deta;
+// }
 
-// id client
-$req1=$connect->prepare("SELECT id FROM client where id_user=?");
+// id coach
+$req1=$connect->prepare("SELECT id FROM coach where id_user=?");
 $req1->bind_param("i",$id_user);
 $req1->execute();
 $res1=$req1->get_result();
-$id_client1=$res1->fetch_assoc();
-$id_client= $id_client1["id"];
-// les reservation de ce client
+$id_coach=$res1->fetch_assoc();
+$id_coach1= $id_coach["id"];
+
+// les reservation de ce coach
 $statusEnAttent="en_attente";
-$statusAcceptee="acceptee";
-$req=$connect->prepare("SELECT c.nom,c.prenom,c.prix,c.photo,r.* FROM reservation r 
+// $statusAcceptee="acceptee";
+$req=$connect->prepare("SELECT c.nom,c.prenom,c.prix,c.photo,cl.nom as 'nomClient',cl.prenom as 'prenomClient',r.* FROM reservation r 
   inner join coach c on  r.id_coach=c.id
-  where r.id_client=? and (r.status=? or r.status=?)  ");
-$req->bind_param("iss",$id_client,$statusEnAttent,$statusAcceptee);
+  inner join client cl on  r.id_client=cl.id
+  where c.id=? and r.status=?");
+$req->bind_param("is",$id_coach1,$statusEnAttent);
 $req->execute();
-$res=$req->get_result();
-$rservationRows=$res->fetch_all(MYSQLI_ASSOC);
+$rservationCoachRows=$req->get_result()->fetch_all(MYSQLI_ASSOC);
 
 
-
-// modification
-if (isset($_POST["modifier"])) {
-  $id_reservation = $_POST['id_reservation'];
-      // modifier reservation 
-      $reqRes=$connect->prepare("UPDATE reservation set status=? where id=?");
-      $status = "Annuler";
-      $reqRes->bind_param("si", $status, $id_reservation);
-      // $reqDis->execute();
-      // prendre les info pour modifier dispo
-      if ($reqRes->execute()) {
-        $reqResInfo = $connect->prepare("SELECT id_coach, date, heure_debut, heure_fin FROM reservation WHERE id=?");
-        $reqResInfo->bind_param("i", $id_reservation);
-        $reqResInfo->execute();
-        $resInfo = $reqResInfo->get_result()->fetch_assoc();
-
-        //  modifier disponibiliter 
-        $disponible = 1;
-        $reqDis=$connect->prepare("UPDATE disponibilite set disponible=? where id_coach=? and date=? and heure_debut=? and heure_fin=?");
-        $reqDis->bind_param("iisss",$disponible,$resInfo["id_coach"],$resInfo["date"],$resInfo["heure_debut"],$resInfo["heure_fin"]);
-        $reqDis->execute();
-        
-        // header("Location: coach-profile.php?idProfilCoach=$idcoach");
-        header("Location: reserver.php?idProfilCoach=" . $resInfo['id_coach']);
-        exit();
-      }
-
-}
-
-
-
-
-// hitorique de reservation
-$statusAnnuler = "Annuler";
-$statusRefuser = "Refuser";
-
-$reqHist = $connect->prepare("SELECT c.nom, c.prenom, c.prix, c.photo, r.* FROM reservation r INNER JOIN coach c ON r.id_coach=c.id WHERE r.id_client=? AND (r.status=? OR r.status=?)");
-
-$reqHist->bind_param("iss", $id_client, $statusAnnuler, $statusRefuser);
-$reqHist->execute();
-$resHist = $reqHist->get_result();
-$reservationHistory = $resHist->fetch_all(MYSQLI_ASSOC);
-
-
-
+// annuler une seance
 if (isset($_POST["annuler"])) {
 
   $id_reservation = $_POST["id_reservation"];
   $status = "Annuler";
 
   //modifier le status de reservation
-  $reqRes = $connect->prepare( "UPDATE reservation SET status=? WHERE id=? AND id_client=?" );
-  $reqRes->bind_param("sii", $status, $id_reservation, $id_client);
+  $reqRes = $connect->prepare( "UPDATE reservation SET status=? WHERE id=? AND id_coach=?" );
+  $reqRes->bind_param("sii", $status, $id_reservation, $id_coach1);
 
   if ($reqRes->execute()) {
-    // prendre les info du reservation
+    // prendre les info du cette reservation 
     $reqInfo = $connect->prepare("SELECT id_coach, date, heure_debut, heure_fin FROM reservation WHERE id=?");
     $reqInfo->bind_param("i", $id_reservation);
     $reqInfo->execute();
@@ -96,10 +53,23 @@ if (isset($_POST["annuler"])) {
     $reqDis = $connect->prepare("UPDATE disponibilite SET disponible=? WHERE id_coach=? AND date=? AND heure_debut=? AND heure_fin=?");
     $reqDis->bind_param("iisss",$disponible,$info["id_coach"],$info["date"],$info["heure_debut"],$info["heure_fin"]);
     $reqDis->execute();
-    header("Location: Mes-reservations.php");
+    header("Location: Mes-reservations-coach.php");
     exit();
   }
 }
+
+// accepter une reservation
+if (isset($_POST["accepter"])) {
+  $id_reservation = $_POST["id_reservation"];
+  // echo $id_reservation;
+  $statusAcc = "Accepter";
+  $reqAccepter = $connect->prepare("UPDATE reservation SET status=? WHERE id=? AND id_coach=?");
+  $reqAccepter->bind_param("sii", $statusAcc, $id_reservation, $id_coach1);
+  $reqAccepter->execute();
+  header("Location: Mes-reservations-coach.php");
+  exit();
+  
+} 
 
 ?>
 <!DOCTYPE html>
@@ -144,34 +114,35 @@ require('./components/header.php')
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Heure Debut</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Heure Fin</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Coach</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
           <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Actions</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
          <?php
-         if (count($rservationRows)>0) {
-         foreach ($rservationRows as $reser) {
+         if (count($rservationCoachRows)>0) {
+          
+         foreach ($rservationCoachRows as $reser) {
         
          ?>
         <tr>
           <td class="px-6 py-4"><?=$reser["date"]?></td>
           <td class="px-6 py-4"><?=$reser["heure_debut"]?></td>
           <td class="px-6 py-4"><?=$reser["heure_fin"]?></td>
-          <td class="px-6 py-4"><?=$reser["prenom"]." ".$reser["nom"]?></td>
+          <td class="px-6 py-4"><?=$reser["prenomClient"]." ".$reser["nomClient"]?></td>
           <td class="px-6 py-4">
             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800"><?=$reser["status"]?></span>
           </td>
           <td class="px-6 py-4 text-center space-x-2">
-            <button data-date="<?=$reser["date"]?>" data-name="<?=$reser["prenom"]." ".$reser["nom"] ?>" data-start="<?=$reser["heure_debut"]?>" data-end="<?=$reser["heure_fin"]?>" data-status="<?=$reser["status"]?>" data-prix="<?=$reser["prix"]?>"
+            <button data-date="<?=$reser["date"]?>" data-name="<?=$reser["prenomClient"]." ".$reser["nomClient"] ?>" data-start="<?=$reser["heure_debut"]?>" data-end="<?=$reser["heure_fin"]?>" data-status="<?=$reser["status"]?>" data-prix="<?=$reser["prix"]?>"
             data-objectif="<?=$reser["objectif"]?>" data-photo="<?=$reser["photo"]?>" class="text-blue-500 hover:text-blue-700 open-modal" title="Détails">
             <i class="fas fa-eye"></i>
           </button>
           <form action="" method="POST">
             <input type="hidden" name="id_reservation" value="<?=$reser['id']?>">
-            <button name="modifier" class="text-yellow-500 hover:text-yellow-700"  title="Modifier">
-              <i class="fas fa-pen"></i>
+            <button name="accepter" class="text-yellow-500 hover:text-yellow-700"  title="accepter">
+              <i class="fa-solid fa-check"></i>
             </button>
           </form>
             <!-- <button class="text-red-500 hover:text-red-700" title="Annuler">
@@ -202,43 +173,11 @@ require('./components/header.php')
       </tbody>
     </table>
   </div>
-  <!-- les reservation annuller ou refuser -->
-   <h2 class="text-2xl font-bold mb-4 mt-8">Historique des Réservations</h2>
-  <div class="overflow-x-auto bg-white rounded-xl shadow">
-    <table class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-50">
-        <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Heure Debut</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Heure Fin</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Coach</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prix</th>
-        </tr>
-      </thead>
-      <tbody class="bg-white divide-y divide-gray-200">
-        <?php foreach ($reservationHistory as $reser) { ?>
-        <tr>
-          <td class="px-6 py-4"><?=$reser["date"]?></td>
-          <td class="px-6 py-4"><?=$reser["heure_debut"]?></td>
-          <td class="px-6 py-4"><?=$reser["heure_fin"]?></td>
-          <td class="px-6 py-4"><?=$reser["prenom"]." ".$reser["nom"]?></td>
-          <td class="px-6 py-4">
-            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <?=($reser["status"]=="Annuler")?"bg-red-100 text-red-800":"bg-gray-200 text-gray-800"?>">
-              <?=$reser["status"]?>
-            </span>
-          </td>
-          <td class="px-6 py-4"><?=$reser["prix"]?> DH</td>
-        </tr>
-        <?php } ?>
-      </tbody>
-    </table>
-  </div>
-
+ 
 </section>  
 
 
-<!--  -->
+
 
 <?php
 require('./components/footer.php')
@@ -301,7 +240,7 @@ require('./components/footer.php')
       </button>
     </div>
   </div>
-</div>
+</div> 
 
 <script>
  
@@ -337,7 +276,7 @@ require('./components/footer.php')
       // photo
       modalPhoto.src = btn.dataset.photo 
         ? btn.dataset.photo 
-        : "https://via.placeholder.com/80";
+        : "image.png";
 
       // show modal
       modal.classList.remove("hidden");
