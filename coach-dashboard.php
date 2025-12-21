@@ -5,42 +5,54 @@ require './session.php';
 
 $id_user=$_SESSION["user_id"];
 
-// $req=$connect->prepare("select * from client where id_user=?");
-// $req->bind_param("s",$id_user);
-// $req->execute();
-// $res=$req->get_result()->fetch_assoc();
-// echo $res["id"];
+// id coach
+$req1=$connect->prepare("SELECT id FROM coach where id_user=?");
+$req1->bind_param("i",$id_user);
+$req1->execute();
+$res1=$req1->get_result();
+$id_coach=$res1->fetch_assoc();
+$id_coach1= $id_coach["id"];
+// 
 $erreur="";
 
-// if (isset($_POST["save"])) {
-//   if (!empty($_POST["nom"]) && !empty($_POST["prenom"]) && !empty($_POST["email"])  && !empty($_POST["telephone"])  && !empty($_POST["password"])) {
-//   $nom=$_POST["nom"];
-//   $prenom=$_POST["prenom"];
-//   $email=$_POST["email"];
-//   $telephone=$_POST["telephone"];
-//   $password=$_POST["password"];
-//   $passW_hasher=password_hash($password,PASSWORD_BCRYPT);
-
-//   $reqUpdate=$connect->prepare("UPDATE client SET email=?,nom=?,prenom=?,telephone=? where id_user=?");
-//   $reqUpdate->bind_param("ssssi",$email,$nom,$prenom,$telephone,$id_user);
-//   $reqUpdate->execute();
-//   //modifier user
-//   $reqUpdate=$connect->prepare("UPDATE users SET email=?,password=? where id=?");
-//   $reqUpdate->bind_param("ssi",$email,$passW_hasher,$id_user);
-//   $reqUpdate->execute();
-//   $erreur="Modification reussite !";
-
-//   }
-
-// }
-
+// le coach et leur specialite
 $req=$connect->prepare("SELECT c.*,GROUP_CONCAT(s.nom_specialite SEPARATOR ', ') as specialite from coach c inner join specialite_coach sc on sc.id_coach=c.id 
   inner join specialite s on s.id=sc.id_specialite where id_user=? 
   group by c.id");
-$req->bind_param("s",$id_user);
+$req->bind_param("i",$id_user);
 $req->execute();
 $res=$req->get_result()->fetch_assoc();
 
+
+// afficher le nombre des reservation en attente
+$reqD=$connect->prepare("SELECT count(*) as nombreReservationAttente from reservation   where status=? and  id_coach=? ");
+$status="en_attente";
+$reqD->bind_param("si",$status,$id_coach1);
+$reqD->execute();
+$resReservationAtt=$reqD->get_result()->fetch_assoc();
+
+// Séances validées aujourd'hui
+$reqValide=$connect->prepare("SELECT count(*) as nombreReservationValideraujour from reservation   where status=? and  id_coach=? and date=CURDATE()");
+$statusAcc="Accepter";
+// $nowdate=CURDATE();
+$reqValide->bind_param("si",$statusAcc,$id_coach1);
+$reqValide->execute();
+$ResvalideToday=$reqValide->get_result()->fetch_assoc();
+
+
+//Séances validées demain
+$reqValideD=$connect->prepare("SELECT count(*) as nombreReservationValideDemain from reservation   where status=? and  id_coach=? and date=CURDATE() + interval 1 day");
+$statusAccDemain="Accepter";
+$reqValideD->bind_param("si",$statusAccDemain,$id_coach1);
+$reqValideD->execute();
+$ResvalideDemain=$reqValideD->get_result()->fetch_assoc();
+
+// Prochaine séance
+$reqValideD=$connect->prepare("SELECT * from reservation where id_coach=? and date>=CURDATE() order by date , heure_debut limit 1");
+// $statusAccDemain="Accepter";
+$reqValideD->bind_param("i",$id_coach1);
+$reqValideD->execute();
+$ProchaineRe=$reqValideD->get_result()->fetch_assoc();
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -84,27 +96,45 @@ require('./components/header.php')
         <section id="statistiques" class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div class="bg-white p-6 rounded-xl shadow flex flex-col items-center">
             <span class="text-gray-500">Demandes en attente</span>
-            <span class="text-3xl font-bold text-green-600 mt-2">5</span>
+            <span class="text-3xl font-bold text-green-600 mt-2"><?=$resReservationAtt["nombreReservationAttente"]?></span>
           </div>
           <div class="bg-white p-6 rounded-xl shadow flex flex-col items-center">
             <span class="text-gray-500">Séances validées aujourd'hui</span>
-            <span class="text-3xl font-bold text-green-600 mt-2">8</span>
+            <span class="text-3xl font-bold text-green-600 mt-2"><?=$ResvalideToday["nombreReservationValideraujour"]?></span>
           </div>
           <div class="bg-white p-6 rounded-xl shadow flex flex-col items-center">
             <span class="text-gray-500">Séances validées demain</span>
-            <span class="text-3xl font-bold text-green-600 mt-2">3</span>
+            <span class="text-3xl font-bold text-green-600 mt-2"><?=$ResvalideDemain["nombreReservationValideDemain"]?></span>
           </div>
         </section>
 
         <!-- Prochain sportif -->
+         <?php
+         if ($ProchaineRe) {
+          
+         ?>
         <section class="bg-white p-6 rounded-xl shadow flex flex-col md:flex-row justify-between items-center">
           <div>
             <h3 class="font-bold text-gray-800">Prochaine séance</h3>
-            <p class="text-gray-600 mt-1">Mohammed Benali - 16 Décembre 2024 à 10:00</p>
+            <p class="text-gray-600 mt-1"><?=$ProchaineRe["prenom"]." ".$ProchaineRe["nom"]?>Mohammed Benali - 16 Décembre 2024 à 10:00</p>
             <p class="text-gray-600">Type : Individuelle</p>
           </div>
           <button class="mt-4 md:mt-0 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">Voir Détails</button>
         </section>
+        <?php
+         }else{
+        ?>
+        <section class="bg-white p-6 rounded-xl shadow flex flex-col md:flex-row justify-between items-center">
+          <div>
+            <h3 class="font-bold text-gray-800">Prochaine séance</h3>
+            <p class="text-gray-600 mt-1">aucun seance pour le moment</p>
+            <!-- <p class="text-gray-600">Type : Individuelle</p> -->
+          </div>
+          <!-- <button class="mt-4 md:mt-0 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">Voir Détails</button> -->
+        </section>
+        <?php
+         }
+        ?>
 
         <!-- Gestion des réservations -->
         <!-- <section id="reservations" class="bg-white p-6 rounded-xl shadow">
