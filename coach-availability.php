@@ -53,10 +53,33 @@ if (isset($_POST["save"])) {
     $erreur="tous les champs sont obligatoir";
   }
 }
+$erreurdelete="";
+if (isset($_POST["annuler"])) {
+  $id_dispo= $_POST["annuler"];
 
-// if ($_POST["annuler"]) {
-//     echo $_POST["annuler"]["data-set"];
-// }
+  // 
+  $reqifixist=$connect->prepare("SELECT COUNT(*) as count FROM reservation WHERE id_disponibilite = ?");
+  $reqifixist->bind_param("i",$id_dispo);
+  $reqifixist->execute();
+  $virifier=$reqifixist->get_result()->fetch_assoc();
+
+  if ($virifier['count'] > 0) {
+          // $erreurdelete = "Impossible de supprimer, cette disponibilité est déjà réservée !";
+      
+    // Supprimer les reservation lier a dispo
+    $deleteReservations = $connect->prepare("DELETE FROM reservation WHERE id_disponibilite=?");
+    $deleteReservations->bind_param("i",$id_dispo);
+    $deleteReservations->execute();
+
+    // Supprimer la disponibilité
+    
+    $reqSql=$connect->prepare("DELETE FROM disponibilite WHERE id=?");
+    $reqSql->bind_param("i",$id_dispo);
+    $reqSql->execute();
+    header("Location: coach-availability.php");
+    exit();
+  }
+}
 
 ?>
 <!DOCTYPE html>
@@ -134,10 +157,11 @@ require('./components/header.php');
             <!-- <button class="text-yellow-500 hover:text-yellow-700" title="Modifier">Modifier
               <i class="fas fa-pen"></i> -->
             </button>
-            
-            <button name="annuler" value="<?=$dispo["id"]?>" class="text-red-500 hover:text-red-700" title="Annuler"> Annuler 
-              <i class="fas fa-trash"></i>
-            </button> 
+            <form action="" method="POST">
+              <button name="annuler" onclick="return confirm('ce temps est deja reserver vous voulez vraiment le supprimer ?')" value="<?=$dispo["id"]?>" class="text-red-500 hover:text-red-700" title="Annuler"> Annuler 
+                <i class="fas fa-trash"></i>
+              </button> 
+            </form>
           </td>
         </tr>
          <?php            

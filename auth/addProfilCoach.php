@@ -49,7 +49,6 @@ if (isset($_POST["submitProfil"])) {
         $req=$connect->prepare("INSERT INTO specialite(nom_specialite) VALUES(?)");
         $req->bind_param("s",$spe);
         if($req->execute()){
-          //bghit najouter le id dia specialiter hna
           $id_specialite[] = $connect->insert_id;
         }
     }
@@ -76,7 +75,7 @@ if (isset($_POST["submitProfil"])) {
         $reqcertif->execute();
     }
 
-    header('Location: ../index.php');
+    header('Location: ../coach-dashboard.php');
 
 
 }
