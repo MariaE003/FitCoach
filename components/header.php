@@ -15,12 +15,12 @@
     </nav>
     <div class="hidden md:flex gap-3">
       
-      <a href="./auth/login.php" class="px-4 py-2 border border-primary rounded-lg hover:bg-primary hover:text-white transition <?= isset($_SESSION["user_id"])?'hidden':'flex'?>">
+      <!-- <a href="./auth/login.php" class="px-4 py-2 border border-primary rounded-lg hover:bg-primary hover:text-white transition <?= isset($_SESSION["user_id"])?'hidden':'flex'?>">
         Connexion
       </a>
       <a href="./auth/register.php" class="px-4 py-2  rounded-lg hover:bg-green-600 transition <?= isset($_SESSION["user_id"])?'hidden':'flex'?>">
         Inscription
-      </a>
+      </a> -->
       <a href="../sportif-profil.php" class="nav-btn px-3 py-1 rounded-lg hover:bg-blue-100 transition cursor-pointer <?= isset($_SESSION["user_id"]) &&  $_SESSION["role"]==="client"  ?'flex':'hidden'?>">Profil</a>
       <a href="../profil-du-coach.php" class="nav-btn px-3 py-1 rounded-lg hover:bg-blue-100 transition cursor-pointer <?= isset($_SESSION["user_id"]) &&  $_SESSION["role"]==="coach"  ?'flex':'hidden'?>">Profil</a>
       <form action="" method="POST">       
