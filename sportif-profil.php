@@ -8,7 +8,7 @@ $req=$connect->prepare("select * from client where id_user=?");
 $req->bind_param("s",$id_user);
 $req->execute();
 $res=$req->get_result()->fetch_assoc();
-echo $res["id"];
+// echo $res["id"];
 $erreur="";
 
 if (isset($_POST["save"])) {

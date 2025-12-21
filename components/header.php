@@ -4,10 +4,14 @@
       <i class="fas fa-dumbbell text-accent"></i> FitCoach
     </a>
     <nav class="hidden md:flex gap-8 font-medium">
-      <a href="./index.php" class="hover:text-accent">Accueil</a>
-      <a href="coaches.php" class="hover:text-accent">Coachs</a>
-      <a href="../Mes-reservations.php" class="hover:text-accent">Mes Reservation</a>
-      <a href="#" class="hover:text-accent">Contact</a>
+      <a href="./index.php" class="hover:text-accent <?= isset($_SESSION["user_id"])?'flex':'hidden'?>">Accueil</a>
+      <a href="coaches.php" class="hover:text-accent <?= isset($_SESSION["user_id"]) &&  $_SESSION["role"]==="client"  ?'flex':'hidden'?>">Coachs</a>
+      <a href="../Mes-reservations.php" class="hover:text-accent <?= isset($_SESSION["user_id"]) &&  $_SESSION["role"]==="client"  ?'flex':'hidden'?>">Mes Reservation</a>
+      <a href="../Mes-reservations-coach.php" class="hover:text-accent <?= isset($_SESSION["user_id"]) &&  $_SESSION["role"]==="coach"  ?'flex':'hidden'?>">Mes Reservation (coach)</a>
+      <a href="../coach-availability.php" class="hover:text-accent <?= isset($_SESSION["user_id"]) &&  $_SESSION["role"]==="coach"  ?'flex':'hidden'?>">disponibilite</a>
+      <!-- <a href="../reserver.php" class="hover:text-accent <?= isset($_SESSION["user_id"]) &&  $_SESSION["role"]==="client"  ?'flex':'hidden'?>">reserver</a> -->
+      <a href="../coach-dashboard.php" class="hover:text-accent <?= isset($_SESSION["user_id"]) &&  $_SESSION["role"]==="coach"  ?'flex':'hidden'?>">Dashboard</a>
+      <!-- <a href="#" class="hover:text-accent">Contact</a> -->
     </nav>
     <div class="hidden md:flex gap-3">
       
@@ -17,10 +21,8 @@
       <a href="./auth/register.php" class="px-4 py-2  rounded-lg hover:bg-green-600 transition <?= isset($_SESSION["user_id"])?'hidden':'flex'?>">
         Inscription
       </a>
-      <!-- <a href="./auth/register.php" name="logout" class="px-4 py-2  rounded-lg hover:bg-green-600 transition <?= !isset($_SESSION["user_id"])?'hidden':'flex'?>">
-        deconnecter
-      </a> -->
       <a href="../sportif-profil.php" class="nav-btn px-3 py-1 rounded-lg hover:bg-blue-100 transition cursor-pointer <?= isset($_SESSION["user_id"]) &&  $_SESSION["role"]==="client"  ?'flex':'hidden'?>">Profil</a>
+      <a href="../profil-du-coach.php" class="nav-btn px-3 py-1 rounded-lg hover:bg-blue-100 transition cursor-pointer <?= isset($_SESSION["user_id"]) &&  $_SESSION["role"]==="coach"  ?'flex':'hidden'?>">Profil</a>
       <form action="" method="POST">       
           <button type="submit" name="logout" 
               class="nav-btn px-3 py-1 rounded-lg hover:bg-blue-100 transition cursor-pointer <?= isset($_SESSION["user_id"])?"flex":"hidden"?>">

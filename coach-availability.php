@@ -56,14 +56,13 @@ if (isset($_POST["save"])) {
 $erreurdelete="";
 if (isset($_POST["annuler"])) {
   $id_dispo= $_POST["annuler"];
-
   // 
   $reqifixist=$connect->prepare("SELECT COUNT(*) as count FROM reservation WHERE id_disponibilite = ?");
   $reqifixist->bind_param("i",$id_dispo);
   $reqifixist->execute();
   $virifier=$reqifixist->get_result()->fetch_assoc();
 
-  if ($virifier['count'] > 0) {
+  // if ($virifier['count'] > 0) {
           // $erreurdelete = "Impossible de supprimer, cette disponibilité est déjà réservée !";
       
     // Supprimer les reservation lier a dispo
@@ -79,7 +78,7 @@ if (isset($_POST["annuler"])) {
     header("Location: coach-availability.php");
     exit();
   }
-}
+// }
 
 ?>
 <!DOCTYPE html>
@@ -147,6 +146,7 @@ require('./components/header.php');
       <tbody class="bg-white divide-y divide-gray-200">
         <!-- foreach -->
          <?php
+         if (count($disponibilite)>0) {
           foreach($disponibilite as $dispo){
          ?>
         <tr>
@@ -158,7 +158,7 @@ require('./components/header.php');
               <i class="fas fa-pen"></i> -->
             </button>
             <form action="" method="POST">
-              <button name="annuler" onclick="return confirm('ce temps est deja reserver vous voulez vraiment le supprimer ?')" value="<?=$dispo["id"]?>" class="text-red-500 hover:text-red-700" title="Annuler"> Annuler 
+              <button name="annuler"  value="<?=$dispo["id"]?>" class="text-red-500 hover:text-red-700" title="Annuler"> Annuler 
                 <i class="fas fa-trash"></i>
               </button> 
             </form>
@@ -166,7 +166,13 @@ require('./components/header.php');
         </tr>
          <?php            
           }
-         ?>
+        }else{
+          echo "<tr>
+            <td colspan='7' class='px-4 py-6 text-center text-gray-500'>aucun disponibilite trouve</td>
+          </tr>";
+              
+        }
+        ?>
 
       </tbody>
     </table>

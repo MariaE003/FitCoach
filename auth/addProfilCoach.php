@@ -77,10 +77,7 @@ if (isset($_POST["submitProfil"])) {
 
     header('Location: ../coach-dashboard.php');
 
-
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -130,7 +127,7 @@ if (isset($_POST["submitProfil"])) {
         <div>
           <label class="block mb-1 font-semibold text-gray-700">Photo</label>
           <!-- <input type="file" name="photo" accept="image/*" class="w-full" required> -->
-          <input type="url" name="photo"  class="w-full" required>
+          <input type="url" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-600" name="photo"  class="w-full" required>
         </div>
 
         <div>

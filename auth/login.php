@@ -2,11 +2,30 @@
 session_start();
 require "../connect.php";
 $erreur="";
+
+
+
+
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+
 if (isset($_POST["Seconnecter"])) {
+
+  // Verifier csrf token
+  if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Erreur CSRF : formulaire invalide !");
+    }
   #vilider les champs
   if (!empty($_POST["email"]) && !empty($_POST["password"])) {
-    $email=$_POST["email"];
-    $password=$_POST["password"];
+    // $email=$_POST["email"];
+    // $password=$_POST["password"];
+
+    $email = htmlspecialchars(trim($_POST['email']), ENT_QUOTES, 'UTF-8');
+    //htmlspecialchars => transforme les caractere speciaux en entite HTML (code)
+    // convertit les guilemet simples ' et doubles " entite HTML
+    $password = htmlspecialchars(trim($_POST['password']), ENT_QUOTES, 'UTF-8');
     // echo $role;
 
     // $passwordHasher=password_hash($password,PASSWORD_BCRYPT);
@@ -28,8 +47,8 @@ if (isset($_POST["Seconnecter"])) {
         ");
         // if($req->execute())
         // si le role est coach il Doit completer leur profil SI IL NA PAS COMPLETER ENCOR
-        if ($user['role']==="coach" && !$req->execute()){
-        header("Location: ./addProfilCoach.php");
+        if ($user['role']==="coach" && $req->execute()){
+        header("Location: addProfilCoach.php");
         exit();
         }
 
@@ -85,13 +104,19 @@ if (isset($_POST["Seconnecter"])) {
           <p class="text-gray-600 mb-6">Accédez à votre compte</p>
 
           <form method="POST" id="loginForm" class="space-y-4" onsubmit="return validerForm()">
-            <?php if(!empty($erreur)){
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+            <?php 
+            if(!empty($erreur)){
               ?>
               <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
-                <?= $erreur ?>
+                <? $erreur ?>
               </div>
             <?php
-            };?>
+            };
+            ?>
+            <!-- <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+                <?= htmlspecialchars($erreur, ENT_QUOTES, 'UTF-8') ?>
+            </div> -->
             <div>
               <label for="email" class="block mb-1 font-semibold text-gray-700">Email</label>
               <input type="email" id="email" name="email" placeholder="votre@email.com" 

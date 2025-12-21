@@ -3,9 +3,11 @@ $RolePage="client";
 require './session.php';
 require './connect.php';
 
-$idcoach=$_GET["idProfilCoach"];
 $id_user=$_SESSION["user_id"];
 // echo $id_user;
+if (isset($_GET["idProfilCoach"])) {
+  $idcoach=$_GET["idProfilCoach"];
+}
 
 // id client
 $req1=$connect->prepare("SELECT id FROM client where id_user=?");
@@ -64,7 +66,6 @@ if (isset($_POST["reserver"])) {
         header("Location: Mes-reservations.php");
         exit();
       }
-
     }
     
   }
@@ -127,6 +128,8 @@ require('./components/header.php');
       
       <!-- Date Card -->
       <?php
+    if (count($dispoLignes)>0) {
+      
     foreach ($dispoLignes as $date=>$time) {
       
       ?>
@@ -148,10 +151,20 @@ require('./components/header.php');
             
             <?php
    }
-   ?></div>
+  
+   ?>
+   </div>
  </div>
  </div>
  <?php
+  }
+}else{
+  ?>
+    <div class="max-w-md mx-auto mt-6 bg-green-50 border border-green-300 text-green-800 px-6 py-4 rounded-xl text-center shadow">
+      Aucun temps disponible pour ce coach
+    </div>
+
+<?php
   }
   ?>
 

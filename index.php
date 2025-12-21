@@ -50,7 +50,7 @@ require('./components/header.php');
         Plateforme professionnelle de réservation de séances sportives personnalisées.
       </p>
       <div class="flex gap-4">
-        <a href="#" class="bg-accent px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition">
+        <a href="./coaches.php" class="bg-accent px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition">
           Trouver un coach
         </a>
         <a href="#" class="border border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary transition">
