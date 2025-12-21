@@ -75,19 +75,7 @@ require('./components/header.php')
     <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-6">
 
       <!-- Sidebar -->
-      <aside class="md:col-span-1 bg-white rounded-xl shadow-lg p-6 flex flex-col space-y-4">
-        <div class="text-center">
-          <img src="<?=$res["photo"]?$res["photo"]:"./images.png" ?>" alt="Photo Coach" class="w-24 h-24 rounded-full mx-auto mb-2">
-          <h2 class="font-bold text-lg text-gray-800"><?=$res["prenom"]." ".$res["nom"]?></h2>
-          <p class="text-gray-500 text-sm"><?=$res["specialite"]?></p>
-        </div>
-        <nav class="mt-4 flex flex-col space-y-2">
-          <a href="./Mes-reservations-coach.php" class="text-green-600 font-semibold hover:underline">Gestion des Réservations</a>
-          <a href="./profil-du-coach.php" class="text-green-600 font-semibold hover:underline">Mon Profil</a>
-          <a href="./coach-availability.php" class="text-green-600 font-semibold hover:underline">Disponibilités</a>
-          <!-- <a href="#statistiques" class="text-green-600 font-semibold hover:underline">Statistiques</a> -->
-        </nav>
-      </aside>
+      <?php   require './components/aside.php';   ?>
 
       <!-- Main Content -->
       <div class="md:col-span-3 flex flex-col space-y-6">
@@ -117,9 +105,9 @@ require('./components/header.php')
           <div>
             <h3 class="font-bold text-gray-800">Prochaine séance</h3>
             <p class="text-gray-600 mt-1"><?=$ProchaineRe["prenom"]." ".$ProchaineRe["nom"]?>Mohammed Benali - 16 Décembre 2024 à 10:00</p>
-            <p class="text-gray-600">Type : Individuelle</p>
+            <!-- <p class="text-gray-600">Type : Individuelle</p> -->
           </div>
-          <button class="mt-4 md:mt-0 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">Voir Détails</button>
+          <a href="./Mes-reservations-coach.php" class="mt-4 md:mt-0 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">Voir Détails</a>
         </section>
         <?php
          }else{
@@ -128,9 +116,7 @@ require('./components/header.php')
           <div>
             <h3 class="font-bold text-gray-800">Prochaine séance</h3>
             <p class="text-gray-600 mt-1">aucun seance pour le moment</p>
-            <!-- <p class="text-gray-600">Type : Individuelle</p> -->
           </div>
-          <!-- <button class="mt-4 md:mt-0 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">Voir Détails</button> -->
         </section>
         <?php
          }

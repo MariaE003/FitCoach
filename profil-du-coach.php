@@ -1,7 +1,40 @@
 <?php
 $RolePage="coach";
 require './session.php';
+require './connect.php';
+
+$id_user=$_SESSION["user_id"];
+// id coach connecter
+$req1=$connect->prepare("SELECT id FROM coach where id_user=?");
+$req1->bind_param("i",$id_user);
+$req1->execute();
+$res1=$req1->get_result();
+$id_coach=$res1->fetch_assoc();
+$id_coach1= $id_coach["id"];
+// 
+$erreur="";
+
+//le coach et leur specialite
+ $req=$connect->prepare("SELECT c.*,GROUP_CONCAT(s.nom_specialite SEPARATOR ', ') as specialite from coach c inner join specialite_coach sc on sc.id_coach=c.id 
+  inner join specialite s on s.id=sc.id_specialite where id_user=? 
+  group by c.id");
+$req->bind_param("i",$id_user);
+$req->execute();
+$res=$req->get_result()->fetch_assoc();
+
+// convertir specialite en array
+$specialite=$res["specialite"];
+$ArraySpacilite=explode(",",$specialite);
+
+
+
+
+
+
+
+
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -12,71 +45,122 @@ require './session.php';
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
+<?php require('./components/header.php'); ?>
+<section class="flex-1 py-10">
+  <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-6">
 
-  <!-- Navigation -->
-  <?php require('./components/header.php'); ?>
+    <!-- Sidebar dashboard -->
+   <?php   require './components/aside.php';   ?>
 
-  <!-- Page Content -->
-  <section class="flex-1 py-10">
-    <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-6">
+    <!-- Profil Main Content -->
+    <div class="md:col-span-3 flex flex-col space-y-6">
 
-      <!-- Sidebar -->
-      <aside class="md:col-span-1 bg-white rounded-xl shadow-lg p-6 flex flex-col space-y-4">
-        <div class="text-center">
-          <img src="https://via.placeholder.com/100" alt="Photo Coach" class="w-24 h-24 rounded-full mx-auto mb-2">
-          <h2 class="font-bold text-lg text-gray-800">Mohammed Benali</h2>
-          <p class="text-gray-500 text-sm">Coach Fitness & Cardio</p>
-        </div>
-        <nav class="mt-4 flex flex-col space-y-2">
-          <a href="./coach-dashboard.php" class="text-green-600 font-semibold hover:underline">Dashboard</a>
-          <a href="#" class="text-green-600 font-semibold hover:underline">Mon Profil</a>
-          <a href="./coach-availability.php" class="text-green-600 font-semibold hover:underline">Disponibilités</a>
-        </nav>
-      </aside>
+      <section class="bg-white p-6 rounded-xl shadow grid gap-6 w-full">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">Modifier Profil Coach</h3>
 
-      <!-- Profil Main Content -->
-      <div class="md:col-span-3 flex flex-col space-y-6">
+        <form class="space-y-4">
 
-        <section class="bg-white p-6 rounded-xl shadow grid md:grid-cols-2 gap-6">
+          <!-- Photo -->
           <div>
-            <h3 class="text-lg font-bold text-gray-800 mb-4">Modifier Profil</h3>
             <label class="block text-gray-700 mb-1">Photo</label>
-            <input type="file" class="mb-4">
-            
-            <label class="block text-gray-700 mb-1">Biographie</label>
-            <textarea class="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4" rows="3">Coach expérimenté en fitness et cardio.</textarea>
-            
-            <label class="block text-gray-700 mb-1">Disciplines sportives</label>
-            <input type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4" placeholder="Fitness, Cardio, Musculation">
-            
-            <label class="block text-gray-700 mb-1">Certifications</label>
-            <input type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4" placeholder="Ex: CrossFit Level 1">
-            
-            <button class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">Enregistrer</button>
+            <input type="url" name="photo" placeholder="URL de votre photo" value="<?=$res["photo"]?>" 
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-600">
           </div>
 
-          <!-- Gestion des disponibilités -->
+          <!-- Biographie -->
           <div>
-            <h3 class="text-lg font-bold text-gray-800 mb-4">Disponibilités</h3>
-            <div class="space-y-2">
-              <div class="flex justify-between items-center bg-gray-100 px-4 py-2 rounded-lg">
-                <span>16/12/2024 - 10:00</span>
-                <button class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition">Modifier</button>
-              </div>
-              <div class="flex justify-between items-center bg-gray-100 px-4 py-2 rounded-lg">
-                <span>16/12/2024 - 11:00</span>
-                <button class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition">Modifier</button>
+            <label class="block text-gray-700 mb-1">Bio</label>
+            <textarea name="bio" rows="3" placeholder="Présentez-vous..." 
+                      class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"><?=$res["bio"]?></textarea>
+          </div>
+
+          <!-- Années d'expérience -->
+          <div>
+            <label class="block text-gray-700 mb-1">Années d'expérience</label>
+            <input type="number" name="experience" min="0" placeholder="Ex: 5"  value="<?=$res["experience_en_annee"]?>" 
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-600">
+          </div>
+
+          <!-- Prix -->
+          <div>
+            <label class="block text-gray-700 mb-1">Prix (DH)</label>
+            <input type="text" name="prix" placeholder="Ex: 200" value="<?=$res["prix"]?>" 
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-600">
+          </div>
+
+          <!-- Spécialités dynamiques -->
+          <div>
+            <label class="block text-gray-700 mb-1">Spécialités</label>
+            <div id="specialitesContainer" class="space-y-2">
+              <div class="flex space-x-2">
+                <?php
+                foreach($ArraySpacilite as $spe){
+
+                
+                ?>
+                <input type="text" name="specialites[]" placeholder="Nom de spécialité"  value="<?=$spe?>"
+                       class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-600">
+                <button type="button" onclick="addSpecialite()" 
+                        class="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">+</button>
+              <?php
+              }
+                ?>
               </div>
             </div>
           </div>
-        </section>
 
-      </div>
+          <!-- Certifications dynamiques -->
+          <div>
+            <label class="block text-gray-700 mb-1">Certifications</label>
+            <div id="certificationsContainer" class="space-y-2">
+              <div class="flex flex-wrap space-x-2 space-y-2">
+                <input type="text" name="certifications[nom][]" placeholder="Nom certification" 
+                       class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-600">
+                <input type="text" name="certifications[annee][]" placeholder="Année" 
+                       class="w-24 border border-gray-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-green-600">
+                <input type="text" name="certifications[etablissement][]" placeholder="Établissement" 
+                       class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-600">
+                <button type="button" onclick="this.parentNode.remove()" 
+                        class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">−</button>
+              </div>
+            </div>
+            <button type="button" onclick="addCertification()" 
+                    class="mt-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Ajouter Certification</button>
+          </div>
+
+          <button type="submit" 
+                  class="w-full bg-green-600 text-white font-semibold py-3 rounded-lg hover:bg-green-700 transition flex items-center justify-center space-x-2">
+            <i class="fas fa-save"></i>
+            <span>Enregistrer Profil</span>
+          </button>
+        </form>
+      </section>
     </div>
-  </section>
+  </div>
+</section>
+<?php require('./components/footer.php'); ?>
 
-  <!-- Footer -->
-  <?php require('./components/footer.php'); ?>
+<script>
+function addSpecialite(){
+  const container = document.getElementById('specialitesContainer');
+  const div = document.createElement('div');
+  div.className = 'flex space-x-2';
+  div.innerHTML = `<input type="text" name="specialites[]" placeholder="Nom de spécialité" class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-600">
+                   <button type="button" onclick="this.parentNode.remove()" class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">−</button>`;
+  container.appendChild(div);
+}
 
-</body>
-</html>
+function addCertification(){
+  const container = document.getElementById('certificationsContainer');
+  const div = document.createElement('div');
+  div.className = 'flex flex-wrap space-x-2 space-y-2';
+  div.innerHTML = `
+    <input type="text" name="certifications[nom][]" placeholder="Nom certification" class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-600">
+    <input type="text" name="certifications[annee][]" placeholder="Année" class="w-24 border border-gray-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-green-600">
+    <input type="text" name="certifications[etablissement][]" placeholder="Établissement" class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-600">
+    <button type="button" onclick="this.parentNode.remove()" class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">−</button>
+  `;
+  container.appendChild(div);
+}
+</script>
+
